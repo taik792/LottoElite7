@@ -1,3 +1,8 @@
+# genera_risultati.py
+# MOTORE 7 - TERNO STRATEGICO
+# 3 numeri per ruota TOP
+# obiettivo: aumentare probabilità AMBO + possibilità TERNO
+
 import json
 from itertools import combinations
 
@@ -22,20 +27,18 @@ def carica_estrazioni():
 
 def score_numero(numero, storico_ruota):
     """
-    Score misto:
-    + frequenza storica
-    + ritardo utile
+    Score:
+    - frequenza storica
+    - ritardo utile
     """
 
     frequenza = 0
     ritardo = 0
 
-    # frequenza totale
     for estrazione in storico_ruota:
         if numero in estrazione:
             frequenza += 1
 
-    # ritardo: quante estrazioni fa è uscito
     trovato = False
     for i, estrazione in enumerate(reversed(storico_ruota), start=1):
         if numero in estrazione:
@@ -46,61 +49,63 @@ def score_numero(numero, storico_ruota):
     if not trovato:
         ritardo = len(storico_ruota)
 
-    # score finale
-    score = (frequenza * 20) + (ritardo * 5)
-
-    return score
+    return (frequenza * 20) + (ritardo * 5)
 
 
-def trova_ambo_forte(nome_ruota, storico_ruota):
+def trova_terno_forte(nome_ruota, storico_ruota):
     """
     Regole:
     - esclude numeri ultima estrazione
     - evita numeri troppo vicini
-    - evita consecutivi
-    - sceglie miglior score
+    - crea TERNO e non solo AMBO
     """
 
     if not storico_ruota:
         return None
 
-    ultima_estrzione = storico_ruota[-1]
+    ultima_estrazione = storico_ruota[-1]
 
     candidati = [
         n for n in range(1, 91)
-        if n not in ultima_estrzione
+        if n not in ultima_estrazione
     ]
 
-    miglior_ambo = None
-    miglior_score = -1
+    # ordina per score
+    candidati = sorted(
+        candidati,
+        key=lambda n: score_numero(n, storico_ruota),
+        reverse=True
+    )
 
-    for n1, n2 in combinations(candidati, 2):
+    terno = []
 
-        # sicurezza doppia
-        if n1 in ultima_estrzione or n2 in ultima_estrzione:
-            continue
+    for numero in candidati:
+        valido = True
 
-        # evita numeri consecutivi / troppo vicini
-        if abs(n1 - n2) < 8:
-            continue
+        for già in terno:
+            if abs(numero - già) < 5:
+                valido = False
+                break
 
-        score = (
-            score_numero(n1, storico_ruota)
-            + score_numero(n2, storico_ruota)
-        )
+        if valido:
+            terno.append(numero)
 
-        if score > miglior_score:
-            miglior_score = score
-            miglior_ambo = [n1, n2]
+        if len(terno) == 3:
+            break
 
-    if not miglior_ambo:
+    if len(terno) < 3:
         return None
+
+    score_totale = sum(
+        score_numero(n, storico_ruota)
+        for n in terno
+    )
 
     return {
         "ruota": nome_ruota,
-        "numeri": miglior_ambo,
-        "score": miglior_score,
-        "ultima_estrazione": ultima_estrzione
+        "numeri": sorted(terno),
+        "score": score_totale,
+        "ultima_estrazione": ultima_estrazione
     }
 
 
@@ -113,7 +118,7 @@ def genera_risultati():
         if ruota not in dati:
             continue
 
-        risultato = trova_ambo_forte(
+        risultato = trova_terno_forte(
             ruota,
             dati[ruota]
         )
@@ -121,25 +126,30 @@ def genera_risultati():
         if risultato:
             risultati.append(risultato)
 
-    # ordinamento TOP per score
-    top = sorted(
+    risultati = sorted(
         risultati,
         key=lambda x: x["score"],
         reverse=True
-    )[:3]
+    )
 
+    top = risultati[:3]
     jolly = top[:1]
 
     output = {
         "top": top,
         "jolly": jolly,
-        "ambo_forte": risultati
+        "terno_forte": risultati
     }
 
     with open("risultati.json", "w", encoding="utf-8") as f:
-        json.dump(output, f, indent=2, ensure_ascii=False)
+        json.dump(
+            output,
+            f,
+            indent=2,
+            ensure_ascii=False
+        )
 
-    print("risultati.json generato correttamente")
+    print("Motore 7 - risultati.json generato correttamente")
 
 
 if __name__ == "__main__":
