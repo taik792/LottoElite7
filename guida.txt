@@ -1,0 +1,103 @@
+COSA FA IL MOTORE 3 (IN PRATICA)
+
+Non è un generatore casuale.
+
+👉 È un sistema che cerca numeri “in fase di uscita”
+
+🧠 1. ANALIZZA LE ULTIME ESTRAZIONI
+
+Prende circa:
+
+👉 ultime 60 estrazioni per ogni ruota
+
+E studia:
+
+quante volte esce un numero
+da quanto tempo non esce
+ogni quanto tende a uscire
+📊 2. CALCOLA 3 COSE IMPORTANTI
+✅ RITARDO
+
+👉 da quante estrazioni NON esce
+
+Esempio:
+
+numero 45 non esce da 12 → ritardo alto
+✅ FREQUENZA
+
+👉 quante volte è uscito
+
+numero caldo = uscito spesso
+numero freddo = esce poco
+✅ RANGE (LA PARTE PIÙ IMPORTANTE)
+
+👉 ogni numero ha un “ritmo”
+
+Esempio:
+
+il 23 esce ogni 7–10 estrazioni
+se ora è a 11 → è “pronto”
+
+👉 questo è il cuore del motore 3
+
+⚙️ 3. CREA UNO SCORE
+
+Per ogni numero:
+
+score = ritardo + frequenza + bonus range
+
+👉 più alto = più interessante
+
+🎲 4. NON PRENDE SEMPRE I MIGLIORI
+
+Questa è la differenza dal motore 2 👇
+
+👉 NON prende sempre top 1,2,3
+👉 prende da un pool più largo (top 40)
+
+e sceglie con:
+
+random controllato
+filtri intelligenti
+🚫 5. EVITA ERRORI CLASSICI
+
+Il motore evita:
+
+❌ numeri appena usciti
+❌ numeri troppo vicini (es: 45–46)
+❌ numeri sempre uguali
+❌ doppioni tra ruote
+
+🔗 6. CREA GLI AMBI
+
+Non prende numeri a caso:
+
+👉 controlla anche se i due numeri stanno bene insieme
+
+(con il bonus che abbiamo aggiunto)
+
+🏆 7. CREA TOP
+
+Prende:
+
+👉 le 3 ruote con score più alto
+
+💣 8. CREA JOLLY
+
+👉 sceglie tra i TOP (non sempre il primo)
+
+così non è prevedibile
+
+📊 9. RISULTATO FINALE
+
+Hai:
+
+TOP = giocate forti
+JOLLY = giocata principale
+RUOTE = copertura completa
+🔥 DIFFERENZA MOTORE 2 vs 3
+Motore 2	Motore 3
+più stabile	più dinamico
+numeri ripetuti	numeri variabili
+semplice	più intelligente
+meno filtri	più filtri
