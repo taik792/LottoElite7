@@ -5,49 +5,19 @@
 <title>LOTTO ELITE PRO</title>
 
 <style>
-body {
-    background: #061a2b;
-    color: white;
-    font-family: Arial;
-    text-align: center;
-}
-
-h1 {
-    color: #00e5ff;
-}
-
-.card {
-    border: 2px solid #00e5ff;
-    border-radius: 15px;
-    padding: 15px;
-    margin: 10px;
-}
-
-.top {
-    border: 3px solid gold;
-    background: #2a1f00;
-}
-
-.jolly {
-    background: red;
-    border: 3px solid darkred;
-}
-
-.numero {
-    color: #00e5ff;
-    font-size: 22px;
-}
-
-.score {
-    color: pink;
-}
+body { background:#061a2b; color:white; text-align:center; font-family:Arial;}
+.card { border:2px solid #00e5ff; border-radius:15px; padding:10px; margin:10px;}
+.top { border:3px solid gold; background:#2a1f00;}
+.jolly { background:red;}
+.numero { color:#00e5ff; font-size:22px;}
+.score { color:pink;}
 </style>
 
 </head>
 <body>
 
 <h1>🔥 LOTTO ELITE PRO</h1>
-<h2>Motore 9</h2>
+<h2>Motore 9 PRO</h2>
 
 <h3>🎯 TOP</h3>
 <div id="top"></div>
@@ -67,115 +37,146 @@ async function carica() {
 
     let risultati = [];
 
-    // 🔥 CALCOLO TERNI + SCORE
     Object.entries(dati.top).forEach(([ruota, r]) => {
 
-        let estrazione = r.ultima_estrazione;
+        let storico = r.estrazioni;
 
-        let terno = generaTerno(estrazione);
-        let score = calcolaScore(terno, estrazione);
+        let stats = analizzaStorico(storico);
+
+        let terno = generaTernoPRO(stats, storico[0]);
+
+        let score = calcolaScorePRO(terno, stats);
 
         risultati.push({
             ruota,
             numeri: terno,
             score,
-            ultima: estrazione
+            ultima: storico[0]
         });
-
     });
 
-    // 🔝 ORDINA TOP
-    risultati.sort((a,b) => b.score - a.score);
+    risultati.sort((a,b)=>b.score-a.score);
 
     let top3 = risultati.slice(0,3);
 
-    // ===== TOP =====
+    // TOP
     const topDiv = document.getElementById("top");
     topDiv.innerHTML = "";
-
-    top3.forEach(t => {
+    top3.forEach(t=>{
         topDiv.innerHTML += `
         <div class="card top">
             <h3>${t.ruota}</h3>
             <div class="numero">${t.numeri.join(" — ")}</div>
             <div class="score">Score: ${t.score}</div>
-        </div>
-        `;
+        </div>`;
     });
 
-    // ===== JOLLY =====
+    // JOLLY
     const j = top3[0];
     document.getElementById("jolly").innerHTML = `
         <div class="card jolly">
             <h3>${j.ruota}</h3>
             <div class="numero">${j.numeri.join(" — ")}</div>
             <div class="score">Score: ${j.score}</div>
-        </div>
-    `;
+        </div>`;
 
-    // ===== RUOTE =====
+    // RUOTE
     const ruoteDiv = document.getElementById("ruote");
     ruoteDiv.innerHTML = "";
 
-    risultati.forEach(r => {
+    risultati.forEach(r=>{
         ruoteDiv.innerHTML += `
         <div class="card">
             <h3>${r.ruota}</h3>
-            <div>Ultima Estrazione</div>
             <div>${r.ultima.join(" • ")}</div>
-            <div>TERNO FORTE</div>
             <div class="numero">${r.numeri.join(" — ")}</div>
-            <div class="score">Score: ${r.score}</div>
-        </div>
-        `;
+            <div class="score">${r.score}</div>
+        </div>`;
     });
-
 }
 
 
-// 🎲 GENERAZIONE TERNO
-function generaTerno(estrazione) {
+// 🧠 ANALISI STORICO
+function analizzaStorico(storico) {
 
-    let numeri = [];
+    let freq = {};
+    let ritardo = {};
 
-    while(numeri.length < 3) {
-        let n = Math.floor(Math.random()*90) + 1;
-
-        if (!estrazione.includes(n) && !numeri.includes(n)) {
-            numeri.push(n);
-        }
+    for(let i=1;i<=90;i++){
+        freq[i]=0;
+        ritardo[i]=0;
     }
 
-    return numeri;
+    storico.forEach((estrazione, index)=>{
+        estrazione.forEach(n=>{
+            freq[n]++;
+            ritardo[n]=0;
+        });
+
+        for(let i=1;i<=90;i++){
+            if(!estrazione.includes(i)){
+                ritardo[i]++;
+            }
+        }
+    });
+
+    return {freq, ritardo};
 }
 
 
-// 🧠 SCORE SERIO (non più quello inutile da 225)
-function calcolaScore(terno, estrazione) {
+// 🎯 GENERAZIONE TERNO PRO
+function generaTernoPRO(stats, ultima) {
+
+    let pool = [];
+
+    for(let i=1;i<=90;i++){
+
+        if(ultima.includes(i)) continue;
+
+        let punteggio =
+            stats.ritardo[i]*2 +
+            (10 - stats.freq[i]);
+
+        pool.push({n:i, val:punteggio});
+    }
+
+    pool.sort((a,b)=>b.val-a.val);
+
+    let selezionati = [];
+
+    for(let i=0;i<20;i++){
+        selezionati.push(pool[i].n);
+    }
+
+    let terno = [];
+
+    while(terno.length<3){
+        let n = selezionati[Math.floor(Math.random()*selezionati.length)];
+        if(!terno.includes(n)) terno.push(n);
+    }
+
+    return terno;
+}
+
+
+// 🧠 SCORE PRO
+function calcolaScorePRO(terno, stats) {
 
     let score = 0;
 
-    // distanza dai numeri usciti
-    terno.forEach(n => {
-        if (!estrazione.includes(n)) score += 15;
-        else score -= 25;
+    terno.forEach(n=>{
+        score += stats.ritardo[n]*3;
+        score += (10 - stats.freq[n])*2;
     });
 
-    // varietà (spread)
-    let diff =
-        Math.abs(terno[0] - terno[1]) +
-        Math.abs(terno[1] - terno[2]);
+    // spread
+    score += Math.abs(terno[0]-terno[1]);
+    score += Math.abs(terno[1]-terno[2]);
 
-    score += diff;
+    // random minimo
+    score += Math.random()*10;
 
-    // pari/dispari bilanciati
-    let pari = terno.filter(n => n % 2 === 0).length;
-    if (pari === 1 || pari === 2) score += 20;
-
-    // random leggero (rompe pareggi)
-    score += Math.floor(Math.random()*20);
-
-    return score;
+    return Math.floor(score);
 }
 
 
