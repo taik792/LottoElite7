@@ -12,18 +12,8 @@ body {
     background: #061b2b;
     color: white;
     text-align: center;
-    padding: 10px;
 }
 
-h1 {
-    color: #00e5ff;
-}
-
-.sezione {
-    margin-top: 30px;
-}
-
-/* CONTENITORI */
 .row {
     display: flex;
     gap: 10px;
@@ -31,45 +21,31 @@ h1 {
     flex-wrap: wrap;
 }
 
-/* CARD GENERICA */
 .card {
     border: 2px solid #00e5ff;
     border-radius: 10px;
     padding: 10px;
     margin: 10px;
-    flex: 1;
     min-width: 120px;
 }
 
-/* TOP */
 .top-card {
     border-color: gold;
     background: #2a1a00;
 }
 
-/* JOLLY */
 .jolly {
     background: red;
-    color: white;
 }
 
-/* NUMERI */
-.numeri {
-    color: #00e5ff;
-    font-size: 18px;
-    margin: 5px 0;
-}
-
-/* SCORE */
-.score {
-    color: pink;
-}
-
-/* GRIGLIA RUOTE */
 .grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+}
+
+.numeri {
+    color: #00e5ff;
 }
 </style>
 </head>
@@ -79,69 +55,87 @@ h1 {
 <h1>🔥 LOTTO ELITE PRO</h1>
 <h2>Motore 9 PRO</h2>
 
-<!-- TOP -->
-<div class="sezione">
 <h3>🎯 TOP</h3>
 <div id="top" class="row"></div>
-</div>
 
-<!-- JOLLY -->
-<div class="sezione">
 <h3>💣 JOLLY</h3>
 <div id="jolly"></div>
-</div>
 
-<!-- RUOTE -->
-<div class="sezione">
 <h3>📊 TERNO FORTE</h3>
 <div id="ruote" class="grid"></div>
-</div>
 
 <script>
 fetch("risultati.json?v=" + new Date().getTime())
-.then(res => res.json())
-.then(dati => {
+.then(r => r.json())
+.then(data => {
 
-    // ===== TOP (TUTTI SU UNA RIGA)
-    const topDiv = document.getElementById("top");
-    topDiv.innerHTML = "";
+    let risultati = [];
 
-    dati.top.forEach(t => {
-        topDiv.innerHTML += `
-            <div class="card top-card">
-                <b>${t.ruota}</b>
-                <div class="numeri">${t.numeri.join(" — ")}</div>
-                <div class="score">Score: ${t.score}</div>
-            </div>
-        `;
+    // 🔹 CONVERTE JSON IN ARRAY UTILIZZABILE
+    Object.entries(data).forEach(([ruota, estrazioni]) => {
+
+        estrazioni.forEach(e => {
+
+            // prendi primi 3 numeri
+            let numeri = e.slice(0,3);
+
+            // score semplice (somma)
+            let score = numeri.reduce((a,b)=>a+b,0);
+
+            risultati.push({
+                ruota,
+                numeri,
+                score,
+                ultima: e
+            });
+
+        });
     });
 
-    // ===== JOLLY (UNA RIGA)
-    const jollyDiv = document.getElementById("jolly");
-    const j = dati.jolly;
+    // 🔹 ORDINA PER SCORE
+    risultati.sort((a,b)=>b.score-a.score);
 
-    jollyDiv.innerHTML = `
+    // ===== TOP (3 MIGLIORI)
+    let top3 = risultati.slice(0,3);
+
+    document.getElementById("top").innerHTML = top3.map(t => `
+        <div class="card top-card">
+            <b>${t.ruota}</b>
+            <div class="numeri">${t.numeri.join(" — ")}</div>
+            <div>Score: ${t.score}</div>
+        </div>
+    `).join("");
+
+    // ===== JOLLY (IL PRIMO)
+    let j = top3[0];
+
+    document.getElementById("jolly").innerHTML = `
         <div class="card jolly">
             <b>${j.ruota}</b>
             <div class="numeri">${j.numeri.join(" — ")}</div>
         </div>
     `;
 
-    // ===== RUOTE (3 PER RIGA)
-    const ruoteDiv = document.getElementById("ruote");
-    ruoteDiv.innerHTML = "";
+    // ===== RUOTE (UNA PER RUOTA)
+    let viste = new Set();
+    let ruoteFinali = [];
 
-    Object.entries(dati.ruote).forEach(([ruota, r]) => {
-        ruoteDiv.innerHTML += `
-            <div class="card">
-                <b>${ruota}</b>
-                <div>Ultima Estrazione</div>
-                <div>${r.ultima_estrazione.join(" • ")}</div>
-                <div class="numeri">${r.numeri.join(" — ")}</div>
-                <div class="score">Score: ${r.score}</div>
-            </div>
-        `;
+    risultati.forEach(r => {
+        if (!viste.has(r.ruota)) {
+            viste.add(r.ruota);
+            ruoteFinali.push(r);
+        }
     });
+
+    document.getElementById("ruote").innerHTML = ruoteFinali.map(r => `
+        <div class="card">
+            <b>${r.ruota}</b>
+            <div>Ultima Estrazione</div>
+            <div>${r.ultima.join(" • ")}</div>
+            <div class="numeri">${r.numeri.join(" — ")}</div>
+            <div>Score: ${r.score}</div>
+        </div>
+    `).join("");
 
 });
 </script>
