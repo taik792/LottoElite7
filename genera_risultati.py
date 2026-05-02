@@ -11,7 +11,7 @@ BONUS_RITARDO = 0.25
 def distanza_ok(numeri):
     numeri = sorted(numeri)
     for i in range(len(numeri)-1):
-        if abs(numeri[i] - numeri[i+1]) < 3:
+        if abs(numeri[i] - numeri[i+1]) < 9:
             return False
     return True
 
