@@ -8,136 +8,149 @@
 
 <style>
 body {
-    font-family: Arial;
-    background: #061b2b;
-    color: white;
-    text-align: center;
+  margin:0;
+  font-family: Arial;
+  background:#082c3a;
+  color:white;
+  text-align:center;
+}
+
+h1 {
+  color:#00e5ff;
+}
+
+.container {
+  padding:20px;
+}
+
+.section {
+  margin-top:30px;
 }
 
 .row {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:15px;
 }
 
 .card {
-    border: 2px solid #00e5ff;
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px;
-    min-width: 120px;
+  border:2px solid #00e5ff;
+  border-radius:15px;
+  padding:15px;
+  min-width:120px;
 }
 
-.top-card {
-    border-color: gold;
-    background: #2a1a00;
+.gold {
+  border-color: gold;
+  background:#3a2a00;
 }
 
-.jolly {
-    background: red;
-}
-
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+.red {
+  background:red;
 }
 
 .numeri {
-    color: #00e5ff;
+  font-size:22px;
+  color:#00e5ff;
+  margin-top:5px;
+}
+
+.score {
+  color:#ff8a8a;
+  font-size:14px;
 }
 </style>
 </head>
 
 <body>
 
+<div class="container">
+
 <h1>🔥 LOTTO ELITE PRO</h1>
 <h2>Motore 9 PRO</h2>
 
+<!-- TOP -->
+<div class="section">
 <h3>🎯 TOP</h3>
 <div id="top" class="row"></div>
+</div>
 
+<!-- JOLLY -->
+<div class="section">
 <h3>💣 JOLLY</h3>
-<div id="jolly"></div>
+<div id="jolly" class="row"></div>
+</div>
 
+<!-- TERNO -->
+<div class="section">
 <h3>📊 TERNO FORTE</h3>
-<div id="ruote" class="grid"></div>
+<div id="ruote"></div>
+</div>
+
+</div>
 
 <script>
-fetch("risultati.json?v=" + new Date().getTime())
-.then(r => r.json())
-.then(data => {
 
-    let risultati = [];
+async function carica() {
+  const res = await fetch("risultati.json");
+  const dati = await res.json();
 
-    // 🔹 CONVERTE JSON IN ARRAY UTILIZZABILE
-    Object.entries(data).forEach(([ruota, estrazioni]) => {
+  // ================= TOP =================
+  const topDiv = document.getElementById("top");
+  topDiv.innerHTML = "";
 
-        estrazioni.forEach(e => {
+  dati.top.forEach(t => {
+    topDiv.innerHTML += `
+      <div class="card gold">
+        <div>${t.ruota}</div>
+        <div class="numeri">${t.numeri.join(" — ")}</div>
+        <div class="score">${t.score}</div>
+      </div>
+    `;
+  });
 
-            // prendi primi 3 numeri
-            let numeri = e.slice(0,3);
+  // ================= JOLLY =================
+  const jollyDiv = document.getElementById("jolly");
+  jollyDiv.innerHTML = `
+    <div class="card red">
+      <div>${dati.jolly.ruota}</div>
+      <div class="numeri">${dati.jolly.numeri.join(" — ")}</div>
+    </div>
+  `;
 
-            // score semplice (somma)
-            let score = numeri.reduce((a,b)=>a+b,0);
+  // ================= TERNO A RIGHE DA 3 =================
+  const ruoteDiv = document.getElementById("ruote");
+  ruoteDiv.innerHTML = "";
 
-            risultati.push({
-                ruota,
-                numeri,
-                score,
-                ultima: e
-            });
+  let gruppo = "";
 
-        });
-    });
+  Object.entries(dati.ruote).forEach(([ruota, r], i) => {
 
-    // 🔹 ORDINA PER SCORE
-    risultati.sort((a,b)=>b.score-a.score);
-
-    // ===== TOP (3 MIGLIORI)
-    let top3 = risultati.slice(0,3);
-
-    document.getElementById("top").innerHTML = top3.map(t => `
-        <div class="card top-card">
-            <b>${t.ruota}</b>
-            <div class="numeri">${t.numeri.join(" — ")}</div>
-            <div>Score: ${t.score}</div>
-        </div>
-    `).join("");
-
-    // ===== JOLLY (IL PRIMO)
-    let j = top3[0];
-
-    document.getElementById("jolly").innerHTML = `
-        <div class="card jolly">
-            <b>${j.ruota}</b>
-            <div class="numeri">${j.numeri.join(" — ")}</div>
-        </div>
+    gruppo += `
+      <div class="card">
+        <div>${ruota}</div>
+        <div style="font-size:12px">${r.ultima_estrazione.join(" • ")}</div>
+        <div class="numeri">${r.numeri.join(" — ")}</div>
+        <div class="score">${r.score}</div>
+      </div>
     `;
 
-    // ===== RUOTE (UNA PER RUOTA)
-    let viste = new Set();
-    let ruoteFinali = [];
+    // ogni 3 crea una riga
+    if ((i + 1) % 3 === 0) {
+      ruoteDiv.innerHTML += `<div class="row">${gruppo}</div>`;
+      gruppo = "";
+    }
+  });
 
-    risultati.forEach(r => {
-        if (!viste.has(r.ruota)) {
-            viste.add(r.ruota);
-            ruoteFinali.push(r);
-        }
-    });
+  // eventuali resti
+  if (gruppo !== "") {
+    ruoteDiv.innerHTML += `<div class="row">${gruppo}</div>`;
+  }
+}
 
-    document.getElementById("ruote").innerHTML = ruoteFinali.map(r => `
-        <div class="card">
-            <b>${r.ruota}</b>
-            <div>Ultima Estrazione</div>
-            <div>${r.ultima.join(" • ")}</div>
-            <div class="numeri">${r.numeri.join(" — ")}</div>
-            <div>Score: ${r.score}</div>
-        </div>
-    `).join("");
+carica();
 
-});
 </script>
 
 </body>
