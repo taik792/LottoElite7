@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>LOTTO ELITE PRO</title>
+<title>Lotto Elite Pro</title>
 
 <style>
-body { background:#061a2b; color:white; text-align:center; font-family:Arial;}
-.card { border:2px solid #00e5ff; border-radius:15px; padding:10px; margin:10px;}
-.top { border:3px solid gold; background:#2a1f00;}
-.jolly { background:red;}
-.numero { color:#00e5ff; font-size:22px;}
-.score { color:pink;}
+body { background:#061a2b; color:white; text-align:center; }
+.card { border:2px solid #00e5ff; margin:10px; padding:10px; border-radius:10px;}
+.top { border:3px solid gold; }
+.jolly { background:red; }
+.numero { color:#00e5ff; font-size:20px; }
 </style>
 
 </head>
@@ -19,13 +18,8 @@ body { background:#061a2b; color:white; text-align:center; font-family:Arial;}
 <h1>🔥 LOTTO ELITE PRO</h1>
 <h2>Motore 9 PRO</h2>
 
-<h3>🎯 TOP</h3>
 <div id="top"></div>
-
-<h3>💣 JOLLY</h3>
 <div id="jolly"></div>
-
-<h3>📊 TERNO FORTE</h3>
 <div id="ruote"></div>
 
 <script>
@@ -35,150 +29,44 @@ async function carica() {
     const res = await fetch("risultati.json");
     const dati = await res.json();
 
-    let risultati = [];
+    let lista = Object.entries(dati.top).map(([ruota, r]) => ({
+        ruota,
+        numeri: r.numeri,
+        score: r.score,
+        ultima: r.ultima_estrazione
+    }));
 
-    Object.entries(dati.top).forEach(([ruota, r]) => {
+    lista.sort((a,b)=>b.score-a.score);
 
-        let storico = r.estrazioni;
-
-        let stats = analizzaStorico(storico);
-
-        let terno = generaTernoPRO(stats, storico[0]);
-
-        let score = calcolaScorePRO(terno, stats);
-
-        risultati.push({
-            ruota,
-            numeri: terno,
-            score,
-            ultima: storico[0]
-        });
-    });
-
-    risultati.sort((a,b)=>b.score-a.score);
-
-    let top3 = risultati.slice(0,3);
+    let top3 = lista.slice(0,3);
 
     // TOP
-    const topDiv = document.getElementById("top");
-    topDiv.innerHTML = "";
-    top3.forEach(t=>{
-        topDiv.innerHTML += `
+    document.getElementById("top").innerHTML =
+        top3.map(t=>`
         <div class="card top">
             <h3>${t.ruota}</h3>
             <div class="numero">${t.numeri.join(" — ")}</div>
-            <div class="score">Score: ${t.score}</div>
-        </div>`;
-    });
+            <div>${t.score}</div>
+        </div>`).join("");
 
     // JOLLY
-    const j = top3[0];
+    let j = top3[0];
     document.getElementById("jolly").innerHTML = `
         <div class="card jolly">
             <h3>${j.ruota}</h3>
             <div class="numero">${j.numeri.join(" — ")}</div>
-            <div class="score">Score: ${j.score}</div>
         </div>`;
 
     // RUOTE
-    const ruoteDiv = document.getElementById("ruote");
-    ruoteDiv.innerHTML = "";
-
-    risultati.forEach(r=>{
-        ruoteDiv.innerHTML += `
+    document.getElementById("ruote").innerHTML =
+        lista.map(r=>`
         <div class="card">
             <h3>${r.ruota}</h3>
             <div>${r.ultima.join(" • ")}</div>
             <div class="numero">${r.numeri.join(" — ")}</div>
-            <div class="score">${r.score}</div>
-        </div>`;
-    });
+            <div>${r.score}</div>
+        </div>`).join("");
 }
-
-
-// 🧠 ANALISI STORICO
-function analizzaStorico(storico) {
-
-    let freq = {};
-    let ritardo = {};
-
-    for(let i=1;i<=90;i++){
-        freq[i]=0;
-        ritardo[i]=0;
-    }
-
-    storico.forEach((estrazione, index)=>{
-        estrazione.forEach(n=>{
-            freq[n]++;
-            ritardo[n]=0;
-        });
-
-        for(let i=1;i<=90;i++){
-            if(!estrazione.includes(i)){
-                ritardo[i]++;
-            }
-        }
-    });
-
-    return {freq, ritardo};
-}
-
-
-// 🎯 GENERAZIONE TERNO PRO
-function generaTernoPRO(stats, ultima) {
-
-    let pool = [];
-
-    for(let i=1;i<=90;i++){
-
-        if(ultima.includes(i)) continue;
-
-        let punteggio =
-            stats.ritardo[i]*2 +
-            (10 - stats.freq[i]);
-
-        pool.push({n:i, val:punteggio});
-    }
-
-    pool.sort((a,b)=>b.val-a.val);
-
-    let selezionati = [];
-
-    for(let i=0;i<20;i++){
-        selezionati.push(pool[i].n);
-    }
-
-    let terno = [];
-
-    while(terno.length<3){
-        let n = selezionati[Math.floor(Math.random()*selezionati.length)];
-        if(!terno.includes(n)) terno.push(n);
-    }
-
-    return terno;
-}
-
-
-// 🧠 SCORE PRO
-function calcolaScorePRO(terno, stats) {
-
-    let score = 0;
-
-    terno.forEach(n=>{
-        score += stats.ritardo[n]*3;
-        score += (10 - stats.freq[n])*2;
-    });
-
-    // spread
-    score += Math.abs(terno[0]-terno[1]);
-    score += Math.abs(terno[1]-terno[2]);
-
-    // random minimo
-    score += Math.random()*10;
-
-    return Math.floor(score);
-}
-
 
 carica();
 
