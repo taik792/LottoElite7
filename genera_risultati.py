@@ -1,117 +1,105 @@
-import json
-from collections import Counter
+// ===== MOTORE 9 PRO COMPLETO =====
 
-FINESTRA = 50  # puoi mettere 40–60
+function generaRisultatiPRO(datiStorici) {
 
-RUOTE = [
-    "Bari","Cagliari","Firenze","Genova","Milano",
-    "Napoli","Palermo","Roma","Torino","Venezia"
-]
+    let output = {
+        top: {}
+    };
 
-def carica_dati():
-    with open("estrazioni.json", "r") as f:
-        return json.load(f)
+    Object.entries(datiStorici).forEach(([ruota, storico]) => {
 
-def ultime_estrazioni_ruota(dati, ruota):
-    return dati[ruota][-FINESTRA:]
+        let stats = analizzaStorico(storico);
 
-def ultima_estrazione(dati, ruota):
-    return dati[ruota][-1]
+        let terno = generaTernoPRO(stats, storico[0]);
 
-def frequenze(estrazioni):
-    c = Counter()
-    for estrazione in estrazioni:
-        c.update(estrazione)
-    return c
+        let score = calcolaScorePRO(terno, stats);
 
-def ritardi(estrazioni):
-    rit = {}
-    tutte = set(range(1, 91))
+        output.top[ruota] = {
+            ultima_estrazione: storico[0],
+            numeri: terno,
+            score: score
+        };
 
-    for numero in tutte:
-        ritardo = 0
-        trovato = False
+    });
 
-        for estrazione in reversed(estrazioni):
-            if numero in estrazione:
-                trovato = True
-                break
-            ritardo += 1
+    return output;
+}
 
-        if not trovato:
-            ritardo = len(estrazioni)
 
-        rit[numero] = ritardo
+// ===== ANALISI STORICO =====
+function analizzaStorico(storico) {
 
-    return rit
+    let freq = {};
+    let ritardo = {};
 
-def penalizza_recenti(estrazioni):
-    penalita = {}
-    recenti = estrazioni[-3:]  # ultime 3
-
-    for i, estrazione in enumerate(reversed(recenti)):
-        peso = (3 - i) * 5  # più recente = più penalità
-        for n in estrazione:
-            penalita[n] = penalita.get(n, 0) + peso
-
-    return penalita
-
-def calcola_score(freq, rit, penalita):
-    score = {}
-
-    for n in range(1, 91):
-        f = freq.get(n, 0)
-        r = rit.get(n, 0)
-        p = penalita.get(n, 0)
-
-        # formula bilanciata
-        score[n] = (f * 2) + (r * 1.5) - p
-
-    return score
-
-def scegli_top(score, esclusi):
-    validi = {k: v for k, v in score.items() if k not in esclusi}
-    ordinati = sorted(validi.items(), key=lambda x: x[1], reverse=True)
-    return [n for n, _ in ordinati[:3]]
-
-def genera():
-    dati = carica_dati()
-    risultati = {}
-
-    for ruota in RUOTE:
-        estrazioni = ultime_estrazioni_ruota(dati, ruota)
-        ultima = ultima_estrazione(dati, ruota)
-
-        freq = frequenze(estrazioni)
-        rit = ritardi(estrazioni)
-        penalita = penalizza_recenti(estrazioni)
-
-        score = calcola_score(freq, rit, penalita)
-
-        top3 = scegli_top(score, ultima)
-
-        risultati[ruota] = {
-            "ultima_estrazione": ultima,
-            "terno": top3,
-            "score": int(sum(score[n] for n in top3))
-        }
-
-    # TOP generale
-    top_global = sorted(
-        risultati.items(),
-        key=lambda x: x[1]["score"],
-        reverse=True
-    )[:3]
-
-    risultati_finali = {
-        "top": {k: v for k, v in top_global},
-        "ruote": risultati
+    for (let i = 1; i <= 90; i++) {
+        freq[i] = 0;
+        ritardo[i] = 0;
     }
 
-    with open("risultati.json", "w") as f:
-        json.dump(risultati_finali, f, indent=2)
+    storico.forEach((estrazione) => {
 
-    print("Motore 9 completato.")
+        estrazione.forEach(n => {
+            freq[n]++;
+            ritardo[n] = 0;
+        });
 
-if __name__ == "__main__":
-    genera()
+        for (let i = 1; i <= 90; i++) {
+            if (!estrazione.includes(i)) {
+                ritardo[i]++;
+            }
+        }
+    });
+
+    return { freq, ritardo };
+}
+
+
+// ===== GENERAZIONE TERNO =====
+function generaTernoPRO(stats, ultima) {
+
+    let pool = [];
+
+    for (let i = 1; i <= 90; i++) {
+
+        if (ultima.includes(i)) continue;
+
+        let valore =
+            stats.ritardo[i] * 3 +
+            (10 - stats.freq[i]) * 2;
+
+        pool.push({ n: i, v: valore });
+    }
+
+    pool.sort((a, b) => b.v - a.v);
+
+    let candidati = pool.slice(0, 25).map(x => x.n);
+
+    let terno = [];
+
+    while (terno.length < 3) {
+        let n = candidati[Math.floor(Math.random() * candidati.length)];
+        if (!terno.includes(n)) terno.push(n);
+    }
+
+    return terno;
+}
+
+
+// ===== SCORE =====
+function calcolaScorePRO(terno, stats) {
+
+    let score = 0;
+
+    terno.forEach(n => {
+        score += stats.ritardo[n] * 4;
+        score += (10 - stats.freq[n]) * 2;
+    });
+
+    score += Math.abs(terno[0] - terno[1]);
+    score += Math.abs(terno[1] - terno[2]);
+
+    score += Math.random() * 10;
+
+    return Math.floor(score);
+}
