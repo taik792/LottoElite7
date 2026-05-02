@@ -1,232 +1,201 @@
 {
-  "top": [
-    {
-      "ruota": "Palermo",
-      "numeri": [
-        30,
-        41,
-        90
-      ],
-      "score": 15445,
-      "ultima_estrazione": [
-        56,
-        62,
-        58,
-        10,
-        67
-      ]
-    },
-    {
-      "ruota": "Bari",
-      "numeri": [
-        3,
-        48,
-        66
-      ],
-      "score": 15425,
-      "ultima_estrazione": [
-        2,
-        58,
-        76,
-        30,
-        50
-      ]
-    },
-    {
-      "ruota": "Napoli",
-      "numeri": [
-        13,
-        20,
-        45
-      ],
-      "score": 15330,
-      "ultima_estrazione": [
-        65,
-        38,
-        37,
-        53,
-        46
-      ]
-    }
-  ],
-  "jolly": [
-    {
-      "ruota": "Palermo",
-      "numeri": [
-        30,
-        41,
-        90
-      ],
-      "score": 15445,
-      "ultima_estrazione": [
-        56,
-        62,
-        58,
-        10,
-        67
-      ]
-    }
-  ],
-  "terno_forte": [
-    {
-      "ruota": "Palermo",
-      "numeri": [
-        30,
-        41,
-        90
-      ],
-      "score": 15445,
-      "ultima_estrazione": [
-        56,
-        62,
-        58,
-        10,
-        67
-      ]
-    },
-    {
-      "ruota": "Bari",
-      "numeri": [
-        3,
-        48,
-        66
-      ],
-      "score": 15425,
-      "ultima_estrazione": [
-        2,
-        58,
-        76,
-        30,
-        50
-      ]
-    },
-    {
-      "ruota": "Napoli",
-      "numeri": [
-        13,
-        20,
-        45
-      ],
-      "score": 15330,
-      "ultima_estrazione": [
-        65,
-        38,
-        37,
-        53,
-        46
-      ]
-    },
-    {
-      "ruota": "Torino",
-      "numeri": [
-        26,
-        42,
-        88
-      ],
-      "score": 15320,
-      "ultima_estrazione": [
-        39,
-        74,
-        29,
-        35,
-        47
-      ]
-    },
-    {
-      "ruota": "Cagliari",
-      "numeri": [
-        1,
-        56,
-        70
-      ],
-      "score": 15145,
-      "ultima_estrazione": [
-        28,
-        6,
-        35,
-        51,
-        39
-      ]
-    },
-    {
-      "ruota": "Venezia",
-      "numeri": [
-        18,
-        34,
-        53
-      ],
-      "score": 15135,
-      "ultima_estrazione": [
-        54,
-        76,
-        22,
-        73,
-        85
-      ]
-    },
-    {
-      "ruota": "Firenze",
-      "numeri": [
-        13,
-        33,
-        73
-      ],
-      "score": 14960,
-      "ultima_estrazione": [
-        46,
-        27,
-        71,
-        88,
-        50
-      ]
-    },
-    {
-      "ruota": "Roma",
-      "numeri": [
-        6,
-        14,
-        45
-      ],
-      "score": 14880,
-      "ultima_estrazione": [
-        57,
-        82,
-        49,
-        80,
-        2
-      ]
-    },
-    {
-      "ruota": "Milano",
-      "numeri": [
-        15,
-        40,
-        53
-      ],
-      "score": 14765,
-      "ultima_estrazione": [
-        82,
-        50,
-        87,
-        51,
-        2
-      ]
-    },
-    {
-      "ruota": "Genova",
-      "numeri": [
-        5,
-        21,
-        74
-      ],
-      "score": 14615,
+  "top": {
+    "Genova": {
       "ultima_estrazione": [
         1,
         8,
         15,
         17,
         38
-      ]
+      ],
+      "terno": [
+        3,
+        6,
+        25
+      ],
+      "score": 226
+    },
+    "Bari": {
+      "ultima_estrazione": [
+        2,
+        58,
+        76,
+        30,
+        50
+      ],
+      "terno": [
+        3,
+        10,
+        13
+      ],
+      "score": 225
+    },
+    "Cagliari": {
+      "ultima_estrazione": [
+        28,
+        6,
+        35,
+        51,
+        39
+      ],
+      "terno": [
+        12,
+        41,
+        52
+      ],
+      "score": 225
     }
-  ]
+  },
+  "ruote": {
+    "Bari": {
+      "ultima_estrazione": [
+        2,
+        58,
+        76,
+        30,
+        50
+      ],
+      "terno": [
+        3,
+        10,
+        13
+      ],
+      "score": 225
+    },
+    "Cagliari": {
+      "ultima_estrazione": [
+        28,
+        6,
+        35,
+        51,
+        39
+      ],
+      "terno": [
+        12,
+        41,
+        52
+      ],
+      "score": 225
+    },
+    "Firenze": {
+      "ultima_estrazione": [
+        46,
+        27,
+        71,
+        88,
+        50
+      ],
+      "terno": [
+        28,
+        33,
+        64
+      ],
+      "score": 225
+    },
+    "Genova": {
+      "ultima_estrazione": [
+        1,
+        8,
+        15,
+        17,
+        38
+      ],
+      "terno": [
+        3,
+        6,
+        25
+      ],
+      "score": 226
+    },
+    "Milano": {
+      "ultima_estrazione": [
+        82,
+        50,
+        87,
+        51,
+        2
+      ],
+      "terno": [
+        15,
+        61,
+        74
+      ],
+      "score": 225
+    },
+    "Napoli": {
+      "ultima_estrazione": [
+        65,
+        38,
+        37,
+        53,
+        46
+      ],
+      "terno": [
+        1,
+        8,
+        40
+      ],
+      "score": 225
+    },
+    "Palermo": {
+      "ultima_estrazione": [
+        56,
+        62,
+        58,
+        10,
+        67
+      ],
+      "terno": [
+        6,
+        30,
+        36
+      ],
+      "score": 225
+    },
+    "Roma": {
+      "ultima_estrazione": [
+        57,
+        82,
+        49,
+        80,
+        2
+      ],
+      "terno": [
+        7,
+        17,
+        34
+      ],
+      "score": 225
+    },
+    "Torino": {
+      "ultima_estrazione": [
+        39,
+        74,
+        29,
+        35,
+        47
+      ],
+      "terno": [
+        11,
+        2,
+        45
+      ],
+      "score": 225
+    },
+    "Venezia": {
+      "ultima_estrazione": [
+        54,
+        76,
+        22,
+        73,
+        85
+      ],
+      "terno": [
+        17,
+        79,
+        33
+      ],
+      "score": 222
+    }
+  }
 }
