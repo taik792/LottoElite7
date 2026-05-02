@@ -78,7 +78,8 @@ h1 {
 <div id="ruote" class="grid"></div>
 </div>
 
-<script>
+: ${dati.jolly.score}</div>
+ <script>
 async function carica() {
     const res = await fetch("risultati.json");
     const dati = await res.json();
@@ -91,7 +92,7 @@ async function carica() {
         topDiv.innerHTML += `
         <div class="card top">
             <h3>${ruota}</h3>
-            <div class="numeri">${r.numeri.join(" — ")}</div>
+            <div class="numeri">${(r.terno || []).join(" — ")}</div>
             <div class="score">Score: ${r.score}</div>
         </div>`;
     });
@@ -104,9 +105,33 @@ async function carica() {
         jollyDiv.innerHTML = `
         <div class="card jolly">
             <h3>${dati.jolly.ruota}</h3>
-            <div class="numeri">${dati.jolly.numeri.join(" — ")}</div>
+            <div class="numeri">${(dati.jolly.terno || []).join(" — ")}</div>
             <div class="score">Score: ${dati.jolly.score}</div>
         </div>`;
+    }
+
+    // ===== RUOTE =====
+    const ruoteDiv = document.getElementById("ruote");
+    ruoteDiv.innerHTML = "";
+
+    Object.entries(dati.ruote).forEach(([ruota, r]) => {
+        ruoteDiv.innerHTML += `
+        <div class="card">
+            <h3>${ruota}</h3>
+
+            <div>Ultima Estrazione</div>
+            <div>${(r.ultima_estrazione || []).join(" • ")}</div>
+
+            <div style="margin-top:10px;">Terno Forte</div>
+            <div class="numeri">${(r.terno || []).join(" — ")}</div>
+
+            <div class="score">Score: ${r.score}</div>
+        </div>`;
+    });
+}
+
+carica();
+</script>       </div>`;
     }
 
     // ===== RUOTE =====
