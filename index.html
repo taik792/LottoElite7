@@ -1,75 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
 <meta charset="UTF-8">
 <title>Lotto Elite Pro</title>
 
 <style>
-body { background:#061a2b; color:white; text-align:center; }
-.card { border:2px solid #00e5ff; margin:10px; padding:10px; border-radius:10px;}
-.top { border:3px solid gold; }
-.jolly { background:red; }
-.numero { color:#00e5ff; font-size:20px; }
-</style>
+body {
+    background:#061826;
+    color:white;
+    font-family:Arial;
+    text-align:center;
+}
 
+.box {
+    border:2px solid cyan;
+    margin:10px;
+    padding:15px;
+    border-radius:12px;
+}
+
+.top {
+    border-color:gold;
+}
+
+.jolly {
+    background:red;
+}
+
+.numero {
+    color:#00eaff;
+    font-size:22px;
+}
+</style>
 </head>
+
 <body>
 
 <h1>🔥 LOTTO ELITE PRO</h1>
 <h2>Motore 9 PRO</h2>
 
+<h3>🎯 TOP</h3>
 <div id="top"></div>
+
+<h3>💣 JOLLY</h3>
 <div id="jolly"></div>
+
+<h3>📊 TERNO FORTE</h3>
 <div id="ruote"></div>
 
 <script>
+fetch("risultati.json")
+.then(res => res.json())
+.then(dati => {
 
-async function carica() {
+    // ===== TOP =====
+    const topDiv = document.getElementById("top");
+    topDiv.innerHTML = "";
 
-    const res = await fetch("risultati.json");
-    const dati = await res.json();
-
-    let lista = Object.entries(dati.top).map(([ruota, r]) => ({
-        ruota,
-        numeri: r.numeri,
-        score: r.score,
-        ultima: r.ultima_estrazione
-    }));
-
-    lista.sort((a,b)=>b.score-a.score);
-
-    let top3 = lista.slice(0,3);
-
-    // TOP
-    document.getElementById("top").innerHTML =
-        top3.map(t=>`
-        <div class="card top">
-            <h3>${t.ruota}</h3>
-            <div class="numero">${t.numeri.join(" — ")}</div>
-            <div>${t.score}</div>
-        </div>`).join("");
-
-    // JOLLY
-    let j = top3[0];
-    document.getElementById("jolly").innerHTML = `
-        <div class="card jolly">
-            <h3>${j.ruota}</h3>
-            <div class="numero">${j.numeri.join(" — ")}</div>
-        </div>`;
-
-    // RUOTE
-    document.getElementById("ruote").innerHTML =
-        lista.map(r=>`
-        <div class="card">
-            <h3>${r.ruota}</h3>
-            <div>${r.ultima.join(" • ")}</div>
+    Object.entries(dati.top).forEach(([ruota, r]) => {
+        topDiv.innerHTML += `
+        <div class="box top">
+            <h3>${ruota}</h3>
             <div class="numero">${r.numeri.join(" — ")}</div>
-            <div>${r.score}</div>
-        </div>`).join("");
-}
+            <div>Score: ${r.score}</div>
+        </div>`;
+    });
 
-carica();
+    // ===== JOLLY =====
+    const jollyDiv = document.getElementById("jolly");
+    jollyDiv.innerHTML = "";
 
+    Object.entries(dati.jolly).forEach(([ruota, r]) => {
+        jollyDiv.innerHTML += `
+        <div class="box jolly">
+            <h3>${ruota}</h3>
+            <div class="numero">${r.numeri.join(" — ")}</div>
+        </div>`;
+    });
+
+    // ===== RUOTE =====
+    const ruoteDiv = document.getElementById("ruote");
+    ruoteDiv.innerHTML = "";
+
+    Object.entries(dati.ruote).forEach(([ruota, r]) => {
+        ruoteDiv.innerHTML += `
+        <div class="box">
+            <h3>${ruota}</h3>
+            <div>Ultima Estrazione</div>
+            <div>${r.ultima_estrazione.join(" • ")}</div>
+            <div class="numero">${r.numeri.join(" — ")}</div>
+            <div>Score: ${r.score}</div>
+        </div>`;
+    });
+
+});
 </script>
 
 </body>
