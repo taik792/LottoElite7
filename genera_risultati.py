@@ -1,59 +1,47 @@
 import json
+from collections import Counter
 
 # ===== CARICA DATI =====
 with open("estrazioni.json") as f:
     dati = json.load(f)
 
-risultati = []
+ruote = {}
 
-# ===== CALCOLO =====
+# ===== ANALISI =====
 for ruota, estrazioni in dati.items():
-    for estr in estrazioni:
 
-        numeri = estr[:3]
+    # 🔥 FIX: inverti ordine (ora: recente → vecchio)
+    estrazioni = estrazioni[::-1]
 
-        # score serio (non random)
-        score = sum(numeri) + len(set(estr))
+    # prendi ultime 20 estrazioni REALI
+    recenti = estrazioni[:20]
 
-        risultati.append({
-            "ruota": ruota,
-            "numeri": numeri,
-            "score": score,
-            "ultima": estr
-        })
+    numeri = []
+    for estr in recenti:
+        numeri.extend(estr)
 
-# ===== ORDINA =====
-risultati.sort(key=lambda x: x["score"], reverse=True)
+    conteggio = Counter(numeri)
+
+    # prendi top 3
+    top3 = [n for n, _ in conteggio.most_common(3)]
+
+    score = sum(conteggio[n] for n in top3)
+
+    ruote[ruota] = {
+        "numeri": top3,
+        "score": score,
+        "ultima_estrazione": estrazioni[0]
+    }
 
 # ===== TOP =====
-top3 = risultati[:3]
-
-top = []
-for t in top3:
-    top.append({
-        "ruota": t["ruota"],
-        "numeri": t["numeri"],
-        "score": t["score"]
-    })
+top = sorted(
+    [{"ruota": r, **d} for r, d in ruote.items()],
+    key=lambda x: x["score"],
+    reverse=True
+)[:3]
 
 # ===== JOLLY =====
-jolly = {
-    "ruota": top3[0]["ruota"],
-    "numeri": top3[0]["numeri"]
-}
-
-# ===== RUOTE =====
-ruote = {}
-viste = set()
-
-for r in risultati:
-    if r["ruota"] not in viste:
-        viste.add(r["ruota"])
-        ruote[r["ruota"]] = {
-            "ultima_estrazione": r["ultima"],
-            "numeri": r["numeri"],
-            "score": r["score"]
-        }
+jolly = top[0]
 
 # ===== OUTPUT =====
 output = {
@@ -64,3 +52,5 @@ output = {
 
 with open("risultati.json", "w") as f:
     json.dump(output, f, indent=2)
+
+print("OK GENERATO")
