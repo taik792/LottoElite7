@@ -1,112 +1,102 @@
 import json
-import random
 
-# ===== ANALISI STORICO =====
-def analizza_storico(storico):
+# -----------------------------
+# CARICA STORICO
+# -----------------------------
+with open("estrazioni.json") as f:
+    storico = json.load(f)
 
-    freq = {i:0 for i in range(1,91)}
-    ritardo = {i:0 for i in range(1,91)}
-
-    for estrazione in storico:
-
-        for n in estrazione:
+# -----------------------------
+# FREQUENZA
+# -----------------------------
+def calcola_frequenze(estrazioni):
+    freq = {n:0 for n in range(1,91)}
+    for estr in estrazioni:
+        for n in estr:
             freq[n] += 1
-            ritardo[n] = 0
+    return freq
 
-        for i in range(1,91):
-            if i not in estrazione:
-                ritardo[i] += 1
+# -----------------------------
+# RITARDO (quante estrazioni non esce)
+# -----------------------------
+def calcola_ritardi(estrazioni):
+    ritardi = {}
+    for n in range(1,91):
+        ritardo = 0
+        for estr in estrazioni:
+            if n in estr:
+                break
+            ritardo += 1
+        ritardi[n] = ritardo
+    return ritardi
 
-    return freq, ritardo
+# -----------------------------
+# GENERA TERNO (DETERMINISTICO)
+# -----------------------------
+def genera_terno(freq, ritardi):
+    numeri = list(range(1,91))
 
+    # score combinato
+    ranking = sorted(
+        numeri,
+        key=lambda n: (ritardi[n]*2 - freq[n]),
+        reverse=True
+    )
 
-# ===== GENERA TERNO PRO =====
-def genera_terno(freq, ritardo, ultima):
+    # prendi i migliori 3
+    return ranking[:3]
 
-    pool = []
-
-    for i in range(1,91):
-
-        if i in ultima:
-            continue
-
-        valore = ritardo[i]*3 + (10 - freq[i])*2
-        pool.append((i, valore))
-
-    pool.sort(key=lambda x: x[1], reverse=True)
-
-    candidati = [n for n,_ in pool[:25]]
-
-    terno = []
-
-    while len(terno) < 3:
-        n = random.choice(candidati)
-        if n not in terno:
-            terno.append(n)
-
-    return terno
-
-
-# ===== SCORE =====
-def calcola_score(terno, freq, ritardo):
-
+# -----------------------------
+# SCORE
+# -----------------------------
+def calcola_score(terno, freq, ritardi):
     score = 0
 
     for n in terno:
-        score += ritardo[n]*4
-        score += (10 - freq[n])*2
+        score += ritardi[n]*3
+        score -= freq[n]
 
-    score += abs(terno[0]-terno[1])
-    score += abs(terno[1]-terno[2])
-
-    score += random.randint(0,10)
+    # distanza numerica
+    score += max(terno) - min(terno)
 
     return score
 
+# -----------------------------
+# GENERAZIONE RUOTE
+# -----------------------------
+ruote = {}
 
-# ===== GENERATORE PRINCIPALE =====
-def genera_risultati(dati_storici):
+for ruota, estrazioni in storico.items():
+    freq = calcola_frequenze(estrazioni)
+    ritardi = calcola_ritardi(estrazioni)
 
-    output = {"top": {}}
+    terno = genera_terno(freq, ritardi)
+    score = calcola_score(terno, freq, ritardi)
 
-    for ruota, storico in dati_storici.items():
+    ruote[ruota] = {
+        "ultima_estrazione": estrazioni[0],
+        "numeri": terno,
+        "score": score
+    }
 
-        freq, ritardo = analizza_storico(storico)
+# -----------------------------
+# ORDINAMENTO
+# -----------------------------
+ordinate = sorted(ruote.items(), key=lambda x: x[1]["score"], reverse=True)
 
-        ultima = storico[0]
+top3 = ordinate[:3]
+jolly = top3[0]
 
-        terno = genera_terno(freq, ritardo, ultima)
-
-        score = calcola_score(terno, freq, ritardo)
-
-        output["top"][ruota] = {
-            "ultima_estrazione": ultima,
-            "numeri": terno,
-            "score": score
-        }
-
-    return output
-
-
-# ===== ESEMPIO DATI =====
-dati_storici = {
-    "Bari": [
-        [42,46,49,16,36],
-        [2,58,76,30,50],
-        [68,50,33,31,23]
-    ],
-    "Genova": [
-        [21,43,79,20,7],
-        [1,8,15,17,38],
-        [22,34,29,35,86]
-    ]
+output = {
+    "top": dict(top3),
+    "jolly": {jolly[0]: jolly[1]},
+    "ruote": ruote
 }
 
-
-# ===== ESECUZIONE =====
-risultati = genera_risultati(dati_storici)
-
+# -----------------------------
+# SALVA
+# -----------------------------
 with open("risultati.json", "w") as f:
-    json.dump(risultati, f, indent=2)
+    json.dump(output, f, indent=2)
 
-print("File risultati.json generato.")
+print("✅ MOTORE 9 PRO VERO ATTIVO")
