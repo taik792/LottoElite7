@@ -5,9 +5,9 @@
       "numeri": [
         9,
         71,
-        34
+        81
       ],
-      "score": 20.7,
+      "score": 22.55,
       "ultima_estrazione": [
         2,
         58,
@@ -17,35 +17,35 @@
       ]
     },
     {
+      "ruota": "Genova",
+      "numeri": [
+        60,
+        52,
+        80
+      ],
+      "score": 20.7,
+      "ultima_estrazione": [
+        1,
+        8,
+        15,
+        17,
+        38
+      ]
+    },
+    {
       "ruota": "Milano",
       "numeri": [
-        8,
         20,
-        7
+        8,
+        5
       ],
-      "score": 19.2,
+      "score": 20.4,
       "ultima_estrazione": [
         82,
         50,
         87,
         51,
         2
-      ]
-    },
-    {
-      "ruota": "Cagliari",
-      "numeri": [
-        50,
-        25,
-        90
-      ],
-      "score": 18.35,
-      "ultima_estrazione": [
-        28,
-        6,
-        35,
-        51,
-        39
       ]
     }
   ],
@@ -54,7 +54,7 @@
     "numeri": [
       9,
       71,
-      34
+      81
     ]
   },
   "ruote": {
@@ -62,9 +62,9 @@
       "numeri": [
         9,
         71,
-        34
+        81
       ],
-      "score": 20.7,
+      "score": 22.55,
       "ultima_estrazione": [
         2,
         58,
@@ -75,11 +75,11 @@
     },
     "Cagliari": {
       "numeri": [
-        50,
         25,
-        90
+        50,
+        54
       ],
-      "score": 18.35,
+      "score": 20.2,
       "ultima_estrazione": [
         28,
         6,
@@ -91,10 +91,10 @@
     "Firenze": {
       "numeri": [
         58,
-        22,
-        5
+        75,
+        82
       ],
-      "score": 16.55,
+      "score": 18.85,
       "ultima_estrazione": [
         46,
         27,
@@ -106,10 +106,10 @@
     "Genova": {
       "numeri": [
         60,
-        81,
-        41
+        52,
+        80
       ],
-      "score": 17.95,
+      "score": 20.7,
       "ultima_estrazione": [
         1,
         8,
@@ -120,11 +120,11 @@
     },
     "Milano": {
       "numeri": [
-        8,
         20,
-        7
+        8,
+        5
       ],
-      "score": 19.2,
+      "score": 20.4,
       "ultima_estrazione": [
         82,
         50,
@@ -136,10 +136,9 @@
     "Napoli": {
       "numeri": [
         16,
-        43,
         17
       ],
-      "score": 17.7,
+      "score": 14.5,
       "ultima_estrazione": [
         65,
         38,
@@ -151,10 +150,10 @@
     "Palermo": {
       "numeri": [
         20,
-        68,
-        74
+        65,
+        79
       ],
-      "score": 16.25,
+      "score": 19.9,
       "ultima_estrazione": [
         56,
         62,
@@ -166,10 +165,10 @@
     "Roma": {
       "numeri": [
         38,
-        67,
-        13
+        52,
+        18
       ],
-      "score": 18.35,
+      "score": 20.0,
       "ultima_estrazione": [
         57,
         82,
@@ -180,11 +179,11 @@
     },
     "Torino": {
       "numeri": [
-        75,
+        55,
         5,
-        26
+        75
       ],
-      "score": 16.4,
+      "score": 18.35,
       "ultima_estrazione": [
         39,
         74,
@@ -195,11 +194,11 @@
     },
     "Venezia": {
       "numeri": [
-        53,
-        19,
-        15
+        23,
+        14,
+        53
       ],
-      "score": 16.95,
+      "score": 19.0,
       "ultima_estrazione": [
         54,
         76,
