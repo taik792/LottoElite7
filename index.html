@@ -1,227 +1,134 @@
-<!-- index.html COMPLETO - MOTORE 7 DEFINITIVO -->
 <!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LOTTO ELITE PRO - Motore 7</title>
+<title>Lotto Elite Pro</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
-    background: #031f35;
-    font-family: Arial, sans-serif;
-    color: white;
-    padding: 20px;
-    text-align: center;
+    margin:0;
+    font-family: Arial;
+    background:#031d2e;
+    color:white;
+    text-align:center;
 }
 
 h1 {
-    color: #00f7ff;
-    font-size: 42px;
-    margin-bottom: 10px;
+    color:#00e5ff;
 }
 
-h2 {
-    color: #00f7ff;
-    margin-bottom: 30px;
-    font-size: 24px;
+.section {
+    margin-top:30px;
 }
 
-.section-title {
-    font-size: 42px;
-    margin: 50px 0 25px;
-    font-weight: bold;
-}
-
-.top-grid,
-.cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    max-width: 1400px;
-    margin: auto;
-}
-
-.top-card {
-    background: #3b2b00;
-    border: 5px solid #ffd700;
-    border-radius: 28px;
-    padding: 30px 15px;
-    box-shadow: 0 0 25px rgba(255,215,0,0.35);
-}
-
-.jolly-card {
-    background: #8b0000;
-    border: 5px solid red;
-    border-radius: 28px;
-    padding: 35px;
-    max-width: 900px;
-    margin: auto;
-    box-shadow: 0 0 25px rgba(255,0,0,0.35);
+.grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap:15px;
+    padding:20px;
 }
 
 .card {
-    background: #0c2f4f;
-    border: 5px solid #00f7ff;
-    border-radius: 28px;
-    padding: 28px 18px;
-    box-shadow: 0 0 20px rgba(0,247,255,0.25);
+    background:#082c44;
+    border:2px solid #00e5ff;
+    border-radius:15px;
+    padding:15px;
 }
 
-.ruota {
-    font-size: 34px;
-    font-weight: bold;
-    margin-bottom: 20px;
+.card.top {
+    background:#3a2a00;
+    border:2px solid gold;
 }
 
-.subtitle {
-    font-size: 18px;
-    margin-bottom: 12px;
-    font-weight: bold;
-}
-
-.estrazione {
-    font-size: 20px;
-    line-height: 1.8;
-    margin-bottom: 20px;
+.card.jolly {
+    background:red;
+    border:none;
 }
 
 .numeri {
-    font-size: 42px;
-    color: #00f7ff;
-    font-weight: bold;
-    margin: 20px 0;
+    font-size:22px;
+    color:#00e5ff;
+    margin:10px 0;
 }
 
 .score {
-    font-size: 24px;
-    color: #ffb6c1;
-    font-weight: bold;
-    margin-top: 18px;
-}
-
-@media(max-width: 900px) {
-    .top-grid,
-    .cards-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-    }
-
-    .ruota {
-        font-size: 18px;
-    }
-
-    .numeri {
-        font-size: 20px;
-    }
-
-    .estrazione {
-        font-size: 14px;
-    }
-
-    .score {
-        font-size: 16px;
-    }
-
-    .section-title {
-        font-size: 28px;
-    }
+    color:#ff9aa2;
 }
 </style>
 </head>
+
 <body>
 
 <h1>🔥 LOTTO ELITE PRO</h1>
-<h2>motore definitivo PRO - Motore 7</h2>
+<h2>Motore 9</h2>
 
-<div class="section-title">🎯 TOP</div>
-<div id="top" class="top-grid"></div>
+<div class="section">
+<h2>🎯 TOP</h2>
+<div id="top" class="grid"></div>
+</div>
 
-<div class="section-title">💣 JOLLY</div>
-<div id="jolly"></div>
+<div class="section">
+<h2>💣 JOLLY</h2>
+<div id="jolly" class="grid"></div>
+</div>
 
-<div class="section-title">📊 TERNO FORTE</div>
-<div id="terno" class="cards-grid"></div>
+<div class="section">
+<h2>📊 TERNO FORTE</h2>
+<div id="ruote" class="grid"></div>
+</div>
 
 <script>
-const ordineRuote = [
-    "Bari",
-    "Cagliari",
-    "Firenze",
-    "Genova",
-    "Milano",
-    "Napoli",
-    "Palermo",
-    "Roma",
-    "Torino",
-    "Venezia"
-];
+async function carica() {
+    const res = await fetch("risultati.json");
+    const dati = await res.json();
 
-fetch("risultati.json?v=" + new Date().getTime())
-.then(res => res.json())
-.then(data => {
-
+    // ===== TOP =====
     const topDiv = document.getElementById("top");
-    const jollyDiv = document.getElementById("jolly");
-    const ternoDiv = document.getElementById("terno");
+    topDiv.innerHTML = "";
 
-    // TOP
-    data.top.forEach(item => {
+    Object.entries(dati.top).forEach(([ruota, r]) => {
         topDiv.innerHTML += `
-            <div class="top-card">
-                <div class="ruota">${item.ruota}</div>
-                <div class="numeri">${item.numeri.join(" — ")}</div>
-            </div>
-        `;
+        <div class="card top">
+            <h3>${ruota}</h3>
+            <div class="numeri">${r.numeri.join(" — ")}</div>
+            <div class="score">Score: ${r.score}</div>
+        </div>`;
     });
 
-    // JOLLY
-    if (data.jolly.length > 0) {
-        const j = data.jolly[0];
+    // ===== JOLLY =====
+    const jollyDiv = document.getElementById("jolly");
+    jollyDiv.innerHTML = "";
 
+    if (dati.jolly) {
         jollyDiv.innerHTML = `
-            <div class="jolly-card">
-                <div class="ruota">${j.ruota}</div>
-                <div class="numeri">${j.numeri.join(" — ")}</div>
-            </div>
-        `;
+        <div class="card jolly">
+            <h3>${dati.jolly.ruota}</h3>
+            <div class="numeri">${dati.jolly.numeri.join(" — ")}</div>
+            <div class="score">Score: ${dati.jolly.score}</div>
+        </div>`;
     }
 
-    // ORDINE RUOTE FISSO
-    const ordinate = [...data.terno_forte].sort((a, b) => {
-        return ordineRuote.indexOf(a.ruota) - ordineRuote.indexOf(b.ruota);
+    // ===== RUOTE =====
+    const ruoteDiv = document.getElementById("ruote");
+    ruoteDiv.innerHTML = "";
+
+    Object.entries(dati.ruote).forEach(([ruota, r]) => {
+        ruoteDiv.innerHTML += `
+        <div class="card">
+            <h3>${ruota}</h3>
+            <div>Ultima Estrazione</div>
+            <div>${r.ultima_estrazione.join(" • ")}</div>
+
+            <div style="margin-top:10px;">Terno Forte</div>
+            <div class="numeri">${r.numeri.join(" — ")}</div>
+
+            <div class="score">Score: ${r.score}</div>
+        </div>`;
     });
+}
 
-    // TERNO FORTE
-    ordinate.forEach(item => {
-        ternoDiv.innerHTML += `
-            <div class="card">
-                <div class="ruota">${item.ruota}</div>
-
-                <div class="subtitle">Ultima Estrazione</div>
-                <div class="estrazione">
-                    ${item.ultima_estrazione.join(" • ")}
-                </div>
-
-                <div class="subtitle">Terno Forte</div>
-                <div class="numeri">
-                    ${item.numeri.join(" — ")}
-                </div>
-
-                <div class="score">
-                    Score: ${item.score}
-                </div>
-            </div>
-        `;
-    });
-
-});
+carica();
 </script>
 
 </body>
