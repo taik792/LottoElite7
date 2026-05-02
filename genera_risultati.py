@@ -7,7 +7,7 @@ with open("estrazioni.json") as f:
     storico = json.load(f)
 
 # -----------------------------
-# FREQUENZA
+# FREQUENZE
 # -----------------------------
 def calcola_frequenze(estrazioni):
     freq = {n:0 for n in range(1,91)}
@@ -17,33 +17,31 @@ def calcola_frequenze(estrazioni):
     return freq
 
 # -----------------------------
-# RITARDO (quante estrazioni non esce)
+# RITARDI
 # -----------------------------
 def calcola_ritardi(estrazioni):
     ritardi = {}
     for n in range(1,91):
-        ritardo = 0
+        rit = 0
         for estr in estrazioni:
             if n in estr:
                 break
-            ritardo += 1
-        ritardi[n] = ritardo
+            rit += 1
+        ritardi[n] = rit
     return ritardi
 
 # -----------------------------
-# GENERA TERNO (DETERMINISTICO)
+# TERNO DETERMINISTICO
 # -----------------------------
 def genera_terno(freq, ritardi):
     numeri = list(range(1,91))
 
-    # score combinato
     ranking = sorted(
         numeri,
         key=lambda n: (ritardi[n]*2 - freq[n]),
         reverse=True
     )
 
-    # prendi i migliori 3
     return ranking[:3]
 
 # -----------------------------
@@ -51,18 +49,15 @@ def genera_terno(freq, ritardi):
 # -----------------------------
 def calcola_score(terno, freq, ritardi):
     score = 0
-
     for n in terno:
         score += ritardi[n]*3
         score -= freq[n]
 
-    # distanza numerica
     score += max(terno) - min(terno)
-
     return score
 
 # -----------------------------
-# GENERAZIONE RUOTE
+# GENERAZIONE
 # -----------------------------
 ruote = {}
 
@@ -80,7 +75,7 @@ for ruota, estrazioni in storico.items():
     }
 
 # -----------------------------
-# ORDINAMENTO
+# ORDINA
 # -----------------------------
 ordinate = sorted(ruote.items(), key=lambda x: x[1]["score"], reverse=True)
 
@@ -99,4 +94,4 @@ output = {
 with open("risultati.json", "w") as f:
     json.dump(output, f, indent=2)
 
-print("✅ MOTORE 9 PRO VERO ATTIVO")
+print("OK")
