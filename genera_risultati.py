@@ -1,105 +1,112 @@
-// ===== MOTORE 9 PRO COMPLETO =====
+import json
+import random
 
-function generaRisultatiPRO(datiStorici) {
+# ===== ANALISI STORICO =====
+def analizza_storico(storico):
 
-    let output = {
-        top: {}
-    };
+    freq = {i:0 for i in range(1,91)}
+    ritardo = {i:0 for i in range(1,91)}
 
-    Object.entries(datiStorici).forEach(([ruota, storico]) => {
+    for estrazione in storico:
 
-        let stats = analizzaStorico(storico);
+        for n in estrazione:
+            freq[n] += 1
+            ritardo[n] = 0
 
-        let terno = generaTernoPRO(stats, storico[0]);
+        for i in range(1,91):
+            if i not in estrazione:
+                ritardo[i] += 1
 
-        let score = calcolaScorePRO(terno, stats);
-
-        output.top[ruota] = {
-            ultima_estrazione: storico[0],
-            numeri: terno,
-            score: score
-        };
-
-    });
-
-    return output;
-}
+    return freq, ritardo
 
 
-// ===== ANALISI STORICO =====
-function analizzaStorico(storico) {
+# ===== GENERA TERNO PRO =====
+def genera_terno(freq, ritardo, ultima):
 
-    let freq = {};
-    let ritardo = {};
+    pool = []
 
-    for (let i = 1; i <= 90; i++) {
-        freq[i] = 0;
-        ritardo[i] = 0;
-    }
+    for i in range(1,91):
 
-    storico.forEach((estrazione) => {
+        if i in ultima:
+            continue
 
-        estrazione.forEach(n => {
-            freq[n]++;
-            ritardo[n] = 0;
-        });
+        valore = ritardo[i]*3 + (10 - freq[i])*2
+        pool.append((i, valore))
 
-        for (let i = 1; i <= 90; i++) {
-            if (!estrazione.includes(i)) {
-                ritardo[i]++;
-            }
+    pool.sort(key=lambda x: x[1], reverse=True)
+
+    candidati = [n for n,_ in pool[:25]]
+
+    terno = []
+
+    while len(terno) < 3:
+        n = random.choice(candidati)
+        if n not in terno:
+            terno.append(n)
+
+    return terno
+
+
+# ===== SCORE =====
+def calcola_score(terno, freq, ritardo):
+
+    score = 0
+
+    for n in terno:
+        score += ritardo[n]*4
+        score += (10 - freq[n])*2
+
+    score += abs(terno[0]-terno[1])
+    score += abs(terno[1]-terno[2])
+
+    score += random.randint(0,10)
+
+    return score
+
+
+# ===== GENERATORE PRINCIPALE =====
+def genera_risultati(dati_storici):
+
+    output = {"top": {}}
+
+    for ruota, storico in dati_storici.items():
+
+        freq, ritardo = analizza_storico(storico)
+
+        ultima = storico[0]
+
+        terno = genera_terno(freq, ritardo, ultima)
+
+        score = calcola_score(terno, freq, ritardo)
+
+        output["top"][ruota] = {
+            "ultima_estrazione": ultima,
+            "numeri": terno,
+            "score": score
         }
-    });
 
-    return { freq, ritardo };
+    return output
+
+
+# ===== ESEMPIO DATI =====
+dati_storici = {
+    "Bari": [
+        [42,46,49,16,36],
+        [2,58,76,30,50],
+        [68,50,33,31,23]
+    ],
+    "Genova": [
+        [21,43,79,20,7],
+        [1,8,15,17,38],
+        [22,34,29,35,86]
+    ]
 }
 
 
-// ===== GENERAZIONE TERNO =====
-function generaTernoPRO(stats, ultima) {
+# ===== ESECUZIONE =====
+risultati = genera_risultati(dati_storici)
 
-    let pool = [];
+with open("risultati.json", "w") as f:
+    json.dump(risultati, f, indent=2)
 
-    for (let i = 1; i <= 90; i++) {
-
-        if (ultima.includes(i)) continue;
-
-        let valore =
-            stats.ritardo[i] * 3 +
-            (10 - stats.freq[i]) * 2;
-
-        pool.push({ n: i, v: valore });
-    }
-
-    pool.sort((a, b) => b.v - a.v);
-
-    let candidati = pool.slice(0, 25).map(x => x.n);
-
-    let terno = [];
-
-    while (terno.length < 3) {
-        let n = candidati[Math.floor(Math.random() * candidati.length)];
-        if (!terno.includes(n)) terno.push(n);
-    }
-
-    return terno;
-}
-
-
-// ===== SCORE =====
-function calcolaScorePRO(terno, stats) {
-
-    let score = 0;
-
-    terno.forEach(n => {
-        score += stats.ritardo[n] * 4;
-        score += (10 - stats.freq[n]) * 2;
-    });
-
-    score += Math.abs(terno[0] - terno[1]);
-    score += Math.abs(terno[1] - terno[2]);
-
-    score += Math.random() * 10;
-
-    return Math.floor(score);
-}
+print("File risultati.json generato.")
