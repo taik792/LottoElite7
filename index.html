@@ -2,160 +2,185 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Lotto Elite Pro</title>
+<title>LOTTO ELITE PRO</title>
 
 <style>
 body {
-    margin:0;
+    background: #061a2b;
+    color: white;
     font-family: Arial;
-    background:#031d2e;
-    color:white;
-    text-align:center;
+    text-align: center;
 }
 
-/* TITOLI */
 h1 {
-    color:#00e5ff;
+    color: #00e5ff;
 }
 
-.section {
-    margin-top:30px;
-}
-
-/* GRID */
-.row-3 {
-    display:grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap:15px;
-    padding:20px;
-}
-
-.row-1 {
-    display:flex;
-    justify-content:center;
-    padding:20px;
-}
-
-/* CARD */
 .card {
-    background:#082c44;
-    border:2px solid #00e5ff;
-    border-radius:15px;
-    padding:15px;
+    border: 2px solid #00e5ff;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 10px;
 }
 
-/* TOP */
-.card.top {
-    background:#3a2a00;
-    border:2px solid gold;
+.top {
+    border: 3px solid gold;
+    background: #2a1f00;
 }
 
-/* JOLLY */
-.card.jolly {
-    background:red;
-    border:none;
-    width:300px;
+.jolly {
+    background: red;
+    border: 3px solid darkred;
 }
 
-/* NUMERI */
-.numeri {
-    font-size:22px;
-    color:#00e5ff;
-    margin:10px 0;
+.numero {
+    color: #00e5ff;
+    font-size: 22px;
 }
 
-/* SCORE */
 .score {
-    color:#ff9aa2;
-}
-
-/* MOBILE */
-@media (max-width: 700px) {
-    .row-3 {
-        grid-template-columns: 1fr;
-    }
+    color: pink;
 }
 </style>
-</head>
 
+</head>
 <body>
 
 <h1>🔥 LOTTO ELITE PRO</h1>
 <h2>Motore 9</h2>
 
-<!-- TOP -->
-<div class="section">
-<h2>🎯 TOP</h2>
-<div id="top" class="row-3"></div>
-</div>
+<h3>🎯 TOP</h3>
+<div id="top"></div>
 
-<!-- JOLLY -->
-<div class="section">
-<h2>💣 JOLLY</h2>
-<div id="jolly" class="row-1"></div>
-</div>
+<h3>💣 JOLLY</h3>
+<div id="jolly"></div>
 
-<!-- RUOTE -->
-<div class="section">
-<h2>📊 TERNO FORTE</h2>
-<div id="ruote" class="row-3"></div>
-</div>
+<h3>📊 TERNO FORTE</h3>
+<div id="ruote"></div>
 
 <script>
+
 async function carica() {
 
     const res = await fetch("risultati.json");
     const dati = await res.json();
 
+    let risultati = [];
+
+    // 🔥 CALCOLO TERNI + SCORE
+    Object.entries(dati.top).forEach(([ruota, r]) => {
+
+        let estrazione = r.ultima_estrazione;
+
+        let terno = generaTerno(estrazione);
+        let score = calcolaScore(terno, estrazione);
+
+        risultati.push({
+            ruota,
+            numeri: terno,
+            score,
+            ultima: estrazione
+        });
+
+    });
+
+    // 🔝 ORDINA TOP
+    risultati.sort((a,b) => b.score - a.score);
+
+    let top3 = risultati.slice(0,3);
+
     // ===== TOP =====
     const topDiv = document.getElementById("top");
     topDiv.innerHTML = "";
 
-    Object.entries(dati.top).slice(0,3).forEach(([ruota, r]) => {
+    top3.forEach(t => {
         topDiv.innerHTML += `
         <div class="card top">
-            <h3>${ruota}</h3>
-            <div class="numeri">${(r.terno || []).join(" — ")}</div>
-            <div class="score">Score: ${r.score}</div>
-        </div>`;
+            <h3>${t.ruota}</h3>
+            <div class="numero">${t.numeri.join(" — ")}</div>
+            <div class="score">Score: ${t.score}</div>
+        </div>
+        `;
     });
 
     // ===== JOLLY =====
-    const jollyDiv = document.getElementById("jolly");
-    jollyDiv.innerHTML = "";
-
-    if (dati.jolly) {
-        jollyDiv.innerHTML = `
+    const j = top3[0];
+    document.getElementById("jolly").innerHTML = `
         <div class="card jolly">
-            <h3>${dati.jolly.ruota}</h3>
-            <div class="numeri">${(dati.jolly.terno || []).join(" — ")}</div>
-            <div class="score">Score: ${dati.jolly.score}</div>
-        </div>`;
-    }
+            <h3>${j.ruota}</h3>
+            <div class="numero">${j.numeri.join(" — ")}</div>
+            <div class="score">Score: ${j.score}</div>
+        </div>
+    `;
 
     // ===== RUOTE =====
     const ruoteDiv = document.getElementById("ruote");
     ruoteDiv.innerHTML = "";
 
-    Object.entries(dati.ruote).forEach(([ruota, r]) => {
+    risultati.forEach(r => {
         ruoteDiv.innerHTML += `
         <div class="card">
-            <h3>${ruota}</h3>
-
+            <h3>${r.ruota}</h3>
             <div>Ultima Estrazione</div>
-            <div>${(r.ultima_estrazione || []).join(" • ")}</div>
-
-            <div style="margin-top:10px;">Terno Forte</div>
-            <div class="numeri">${(r.terno || []).join(" — ")}</div>
-
+            <div>${r.ultima.join(" • ")}</div>
+            <div>TERNO FORTE</div>
+            <div class="numero">${r.numeri.join(" — ")}</div>
             <div class="score">Score: ${r.score}</div>
-        </div>`;
+        </div>
+        `;
     });
+
 }
 
+
+// 🎲 GENERAZIONE TERNO
+function generaTerno(estrazione) {
+
+    let numeri = [];
+
+    while(numeri.length < 3) {
+        let n = Math.floor(Math.random()*90) + 1;
+
+        if (!estrazione.includes(n) && !numeri.includes(n)) {
+            numeri.push(n);
+        }
+    }
+
+    return numeri;
+}
+
+
+// 🧠 SCORE SERIO (non più quello inutile da 225)
+function calcolaScore(terno, estrazione) {
+
+    let score = 0;
+
+    // distanza dai numeri usciti
+    terno.forEach(n => {
+        if (!estrazione.includes(n)) score += 15;
+        else score -= 25;
+    });
+
+    // varietà (spread)
+    let diff =
+        Math.abs(terno[0] - terno[1]) +
+        Math.abs(terno[1] - terno[2]);
+
+    score += diff;
+
+    // pari/dispari bilanciati
+    let pari = terno.filter(n => n % 2 === 0).length;
+    if (pari === 1 || pari === 2) score += 20;
+
+    // random leggero (rompe pareggi)
+    score += Math.floor(Math.random()*20);
+
+    return score;
+}
+
+
 carica();
+
 </script>
 
 </body>
