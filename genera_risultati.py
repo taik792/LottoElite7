@@ -4,8 +4,8 @@ from collections import defaultdict
 # ===== CONFIG =====
 FINESTRA = 20          # quante estrazioni considerare
 PESO_RECENTE = 2.0     # quanto pesano le più recenti
-PENALITA_ULTIMA = 0.6  # penalità se numero nell'ultima estrazione
-BONUS_RITARDO = 0.15   # bonus per numeri assenti da più tempo
+PENALITA_ULTIMA = 0.4  # penalità se numero nell'ultima estrazione
+BONUS_RITARDO = 0.25   # bonus per numeri assenti da più tempo
 
 # ===== CARICA DATI =====
 with open("estrazioni.json") as f:
