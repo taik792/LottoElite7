@@ -1,156 +1,117 @@
-# genera_risultati.py
-# MOTORE 7 - TERNO STRATEGICO
-# 3 numeri per ruota TOP
-# obiettivo: aumentare probabilità AMBO + possibilità TERNO
-
 import json
-from itertools import combinations
+from collections import Counter
 
-RUOTE_ORDINE = [
-    "Bari",
-    "Cagliari",
-    "Firenze",
-    "Genova",
-    "Milano",
-    "Napoli",
-    "Palermo",
-    "Roma",
-    "Torino",
-    "Venezia"
+FINESTRA = 50  # puoi mettere 40–60
+
+RUOTE = [
+    "Bari","Cagliari","Firenze","Genova","Milano",
+    "Napoli","Palermo","Roma","Torino","Venezia"
 ]
 
-
-def carica_estrazioni():
-    with open("estrazioni.json", "r", encoding="utf-8") as f:
+def carica_dati():
+    with open("estrazioni.json", "r") as f:
         return json.load(f)
 
+def ultime_estrazioni_ruota(dati, ruota):
+    return dati[ruota][-FINESTRA:]
 
-def score_numero(numero, storico_ruota):
-    """
-    Score:
-    - frequenza storica
-    - ritardo utile
-    """
+def ultima_estrazione(dati, ruota):
+    return dati[ruota][-1]
 
-    frequenza = 0
-    ritardo = 0
+def frequenze(estrazioni):
+    c = Counter()
+    for estrazione in estrazioni:
+        c.update(estrazione)
+    return c
 
-    for estrazione in storico_ruota:
-        if numero in estrazione:
-            frequenza += 1
+def ritardi(estrazioni):
+    rit = {}
+    tutte = set(range(1, 91))
 
-    trovato = False
-    for i, estrazione in enumerate(reversed(storico_ruota), start=1):
-        if numero in estrazione:
-            ritardo = i
-            trovato = True
-            break
+    for numero in tutte:
+        ritardo = 0
+        trovato = False
 
-    if not trovato:
-        ritardo = len(storico_ruota)
-
-    return (frequenza * 20) + (ritardo * 5)
-
-
-def trova_terno_forte(nome_ruota, storico_ruota):
-    """
-    Regole:
-    - esclude numeri ultima estrazione
-    - evita numeri troppo vicini
-    - crea TERNO e non solo AMBO
-    """
-
-    if not storico_ruota:
-        return None
-
-    ultima_estrazione = storico_ruota[-1]
-
-    candidati = [
-        n for n in range(1, 91)
-        if n not in ultima_estrazione
-    ]
-
-    # ordina per score
-    candidati = sorted(
-        candidati,
-        key=lambda n: score_numero(n, storico_ruota),
-        reverse=True
-    )
-
-    terno = []
-
-    for numero in candidati:
-        valido = True
-
-        for già in terno:
-            if abs(numero - già) < 5:
-                valido = False
+        for estrazione in reversed(estrazioni):
+            if numero in estrazione:
+                trovato = True
                 break
+            ritardo += 1
 
-        if valido:
-            terno.append(numero)
+        if not trovato:
+            ritardo = len(estrazioni)
 
-        if len(terno) == 3:
-            break
+        rit[numero] = ritardo
 
-    if len(terno) < 3:
-        return None
+    return rit
 
-    score_totale = sum(
-        score_numero(n, storico_ruota)
-        for n in terno
-    )
+def penalizza_recenti(estrazioni):
+    penalita = {}
+    recenti = estrazioni[-3:]  # ultime 3
 
-    return {
-        "ruota": nome_ruota,
-        "numeri": sorted(terno),
-        "score": score_totale,
-        "ultima_estrazione": ultima_estrazione
-    }
+    for i, estrazione in enumerate(reversed(recenti)):
+        peso = (3 - i) * 5  # più recente = più penalità
+        for n in estrazione:
+            penalita[n] = penalita.get(n, 0) + peso
 
+    return penalita
 
-def genera_risultati():
-    dati = carica_estrazioni()
+def calcola_score(freq, rit, penalita):
+    score = {}
 
-    risultati = []
+    for n in range(1, 91):
+        f = freq.get(n, 0)
+        r = rit.get(n, 0)
+        p = penalita.get(n, 0)
 
-    for ruota in RUOTE_ORDINE:
-        if ruota not in dati:
-            continue
+        # formula bilanciata
+        score[n] = (f * 2) + (r * 1.5) - p
 
-        risultato = trova_terno_forte(
-            ruota,
-            dati[ruota]
-        )
+    return score
 
-        if risultato:
-            risultati.append(risultato)
+def scegli_top(score, esclusi):
+    validi = {k: v for k, v in score.items() if k not in esclusi}
+    ordinati = sorted(validi.items(), key=lambda x: x[1], reverse=True)
+    return [n for n, _ in ordinati[:3]]
 
-    risultati = sorted(
-        risultati,
-        key=lambda x: x["score"],
+def genera():
+    dati = carica_dati()
+    risultati = {}
+
+    for ruota in RUOTE:
+        estrazioni = ultime_estrazioni_ruota(dati, ruota)
+        ultima = ultima_estrazione(dati, ruota)
+
+        freq = frequenze(estrazioni)
+        rit = ritardi(estrazioni)
+        penalita = penalizza_recenti(estrazioni)
+
+        score = calcola_score(freq, rit, penalita)
+
+        top3 = scegli_top(score, ultima)
+
+        risultati[ruota] = {
+            "ultima_estrazione": ultima,
+            "terno": top3,
+            "score": int(sum(score[n] for n in top3))
+        }
+
+    # TOP generale
+    top_global = sorted(
+        risultati.items(),
+        key=lambda x: x[1]["score"],
         reverse=True
-    )
+    )[:3]
 
-    top = risultati[:3]
-    jolly = top[:1]
-
-    output = {
-        "top": top,
-        "jolly": jolly,
-        "terno_forte": risultati
+    risultati_finali = {
+        "top": {k: v for k, v in top_global},
+        "ruote": risultati
     }
 
-    with open("risultati.json", "w", encoding="utf-8") as f:
-        json.dump(
-            output,
-            f,
-            indent=2,
-            ensure_ascii=False
-        )
+    with open("risultati.json", "w") as f:
+        json.dump(risultati_finali, f, indent=2)
 
-    print("Motore 7 - risultati.json generato correttamente")
-
+    print("Motore 9 completato.")
 
 if __name__ == "__main__":
-    genera_risultati()
+    genera()
