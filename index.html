@@ -2,34 +2,74 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Lotto Elite Pro</title>
 
 <style>
 body {
-    background:#061826;
-    color:white;
-    font-family:Arial;
-    text-align:center;
+    font-family: Arial;
+    background: #061b2b;
+    color: white;
+    text-align: center;
+    padding: 10px;
 }
 
-.box {
-    border:2px solid cyan;
-    margin:10px;
-    padding:15px;
-    border-radius:12px;
+h1 {
+    color: #00e5ff;
 }
 
-.top {
-    border-color:gold;
+.sezione {
+    margin-top: 30px;
 }
 
+/* CONTENITORI */
+.row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* CARD GENERICA */
+.card {
+    border: 2px solid #00e5ff;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    flex: 1;
+    min-width: 120px;
+}
+
+/* TOP */
+.top-card {
+    border-color: gold;
+    background: #2a1a00;
+}
+
+/* JOLLY */
 .jolly {
-    background:red;
+    background: red;
+    color: white;
 }
 
-.numero {
-    color:#00eaff;
-    font-size:22px;
+/* NUMERI */
+.numeri {
+    color: #00e5ff;
+    font-size: 18px;
+    margin: 5px 0;
+}
+
+/* SCORE */
+.score {
+    color: pink;
+}
+
+/* GRIGLIA RUOTE */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
 }
 </style>
 </head>
@@ -39,58 +79,68 @@ body {
 <h1>🔥 LOTTO ELITE PRO</h1>
 <h2>Motore 9 PRO</h2>
 
+<!-- TOP -->
+<div class="sezione">
 <h3>🎯 TOP</h3>
-<div id="top"></div>
+<div id="top" class="row"></div>
+</div>
 
+<!-- JOLLY -->
+<div class="sezione">
 <h3>💣 JOLLY</h3>
 <div id="jolly"></div>
+</div>
 
+<!-- RUOTE -->
+<div class="sezione">
 <h3>📊 TERNO FORTE</h3>
-<div id="ruote"></div>
+<div id="ruote" class="grid"></div>
+</div>
 
 <script>
-fetch("risultati.json")
+fetch("risultati.json?v=" + new Date().getTime())
 .then(res => res.json())
 .then(dati => {
 
-    // ===== TOP =====
+    // ===== TOP (TUTTI SU UNA RIGA)
     const topDiv = document.getElementById("top");
     topDiv.innerHTML = "";
 
-    Object.entries(dati.top).forEach(([ruota, r]) => {
+    dati.top.forEach(t => {
         topDiv.innerHTML += `
-        <div class="box top">
-            <h3>${ruota}</h3>
-            <div class="numero">${r.numeri.join(" — ")}</div>
-            <div>Score: ${r.score}</div>
-        </div>`;
+            <div class="card top-card">
+                <b>${t.ruota}</b>
+                <div class="numeri">${t.numeri.join(" — ")}</div>
+                <div class="score">Score: ${t.score}</div>
+            </div>
+        `;
     });
 
-    // ===== JOLLY =====
+    // ===== JOLLY (UNA RIGA)
     const jollyDiv = document.getElementById("jolly");
-    jollyDiv.innerHTML = "";
+    const j = dati.jolly;
 
-    Object.entries(dati.jolly).forEach(([ruota, r]) => {
-        jollyDiv.innerHTML += `
-        <div class="box jolly">
-            <h3>${ruota}</h3>
-            <div class="numero">${r.numeri.join(" — ")}</div>
-        </div>`;
-    });
+    jollyDiv.innerHTML = `
+        <div class="card jolly">
+            <b>${j.ruota}</b>
+            <div class="numeri">${j.numeri.join(" — ")}</div>
+        </div>
+    `;
 
-    // ===== RUOTE =====
+    // ===== RUOTE (3 PER RIGA)
     const ruoteDiv = document.getElementById("ruote");
     ruoteDiv.innerHTML = "";
 
     Object.entries(dati.ruote).forEach(([ruota, r]) => {
         ruoteDiv.innerHTML += `
-        <div class="box">
-            <h3>${ruota}</h3>
-            <div>Ultima Estrazione</div>
-            <div>${r.ultima_estrazione.join(" • ")}</div>
-            <div class="numero">${r.numeri.join(" — ")}</div>
-            <div>Score: ${r.score}</div>
-        </div>`;
+            <div class="card">
+                <b>${ruota}</b>
+                <div>Ultima Estrazione</div>
+                <div>${r.ultima_estrazione.join(" • ")}</div>
+                <div class="numeri">${r.numeri.join(" — ")}</div>
+                <div class="score">Score: ${r.score}</div>
+            </div>
+        `;
     });
 
 });
