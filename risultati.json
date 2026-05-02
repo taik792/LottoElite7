@@ -17,35 +17,35 @@
       ]
     },
     {
-      "ruota": "Genova",
-      "numeri": [
-        60,
-        52,
-        80
-      ],
-      "score": 20.7,
-      "ultima_estrazione": [
-        1,
-        8,
-        15,
-        17,
-        38
-      ]
-    },
-    {
       "ruota": "Milano",
       "numeri": [
         20,
         8,
-        5
+        68
       ],
-      "score": 20.4,
+      "score": 20.25,
       "ultima_estrazione": [
         82,
         50,
         87,
         51,
         2
+      ]
+    },
+    {
+      "ruota": "Cagliari",
+      "numeri": [
+        25,
+        50,
+        90
+      ],
+      "score": 20.15,
+      "ultima_estrazione": [
+        28,
+        6,
+        35,
+        51,
+        39
       ]
     }
   ],
@@ -77,9 +77,9 @@
       "numeri": [
         25,
         50,
-        54
+        90
       ],
-      "score": 20.2,
+      "score": 20.15,
       "ultima_estrazione": [
         28,
         6,
@@ -92,9 +92,9 @@
       "numeri": [
         58,
         75,
-        82
+        29
       ],
-      "score": 18.85,
+      "score": 18.8,
       "ultima_estrazione": [
         46,
         27,
@@ -106,10 +106,9 @@
     "Genova": {
       "numeri": [
         60,
-        52,
-        80
+        52
       ],
-      "score": 20.7,
+      "score": 14.5,
       "ultima_estrazione": [
         1,
         8,
@@ -122,9 +121,9 @@
       "numeri": [
         20,
         8,
-        5
+        68
       ],
-      "score": 20.4,
+      "score": 20.25,
       "ultima_estrazione": [
         82,
         50,
