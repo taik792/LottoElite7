@@ -49,8 +49,8 @@ def score_ambo(n1,n2,storico):
     if d<=2:
         score-=40
 
-    ultimi244=storico[-244:]
-    if not any(n1 in e and n2 in e for e in ultimi244):
+    ultimi144=storico[-144:]
+    if not any(n1 in e and n2 in e for e in ultimi144):
         score+=60
 
     return round(score,2)
