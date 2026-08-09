@@ -20,7 +20,7 @@ jobs:
           python-version: '3.11'
 
       - name: Esegui algoritmo
-        run: python genera_risultati.py
+        run: python genera_risultati_V9.py
 
       - name: Commit risultati
         run: |
