@@ -24,7 +24,7 @@ jobs:
 
       - name: Esegui algoritmo
         run: |
-          python genera_risultati.py
+          python genera_risultati_V9.py
 
       - name: Commit risultati
         run: |
