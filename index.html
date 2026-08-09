@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lotto Intelligence V8</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --accent: #3b82f6;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --ambata-bg: #ffedd5;
+            --ambata-txt: #ea580c;
+            --ambo-bg: #dbeafe;
+            --ambo-txt: #1d4ed8;
+            --win-bg: #d1fae5;
+            --win-txt: #065f46;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 12px;
+        }
+        .container { max-width: 550px; margin: 0 auto; }
+        header {
+            text-align: center; margin-bottom: 16px;
+            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            padding: 16px; border-radius: 12px; color: white;
+        }
+        header h1 { margin: 0 0 4px 0; font-size: 1.3rem; }
+        .info-concorso { font-size: 0.85rem; color: #93c5fd; margin: 0; }
+        .section-title { font-size: 1.1rem; font-weight: 700; margin: 20px 0 10px 0; color: #0f172a; text-transform: uppercase; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; }
+        .card-ruota {
+            background: var(--card-bg); border-radius: 12px; padding: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border-left: 5px solid var(--accent);
+            margin-bottom: 12px;
+        }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .ruota-title { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; color: var(--primary); }
+        .spia-badge { background: #f1f5f9; color: #475569; font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; font-weight: 700; }
+        .palline-box { display: flex; gap: 6px; margin-bottom: 12px; }
+        .pallina {
+            width: 30px; height: 30px; background: #f1f5f9; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem;
+        }
+        .previsione-box { display: flex; gap: 8px; margin-bottom: 8px; }
+        .prev-item { flex: 1; padding: 8px; border-radius: 8px; text-align: center; }
+        .prev-item.ambata { background: var(--ambata-bg); color: var(--ambata-txt); }
+        .prev-item.ambo { background: var(--ambo-bg); color: var(--ambo-txt); }
+        .prev-label { font-size: 0.7rem; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+        .prev-value { font-size: 1.1rem; font-weight: 800; }
+        .ambetti-box {
+            background: #fafafa; border: 1px solid #e5e7eb; padding: 6px; border-radius: 8px;
+            font-size: 0.75rem; text-align: center;
+        }
+        .ambetti-valori { color: #4b5563; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Lotto Intelligence V8</h1>
+        <p id="info-data" class="info-concorso">Algoritmo Sommativo Unificato</p>
+    </header>
+    
+    <div class="section-title">Previsione in Corso</div>
+    <div id="ruote-list"></div>
+
+    <div class="section-title" style="margin-top: 30px;">Archivio Storico Blindato</div>
+    <div id="storico-list"></div>
+</div>
+
+<script>
+    async function caricaRisultati() {
+        try {
+            const response = await fetch('risultati_v4.json?t=' + new Date().getTime());
+            const data = await response.json();
+            
+            document.getElementById('info-data').innerText = `Estrazione del: ${data.info_concorso.data || "N.D."}`;
+            
+            // Render Previsione in Corso
+            const container = document.getElementById('ruote-list');
+            container.innerHTML = ''; 
+            for (const [ruota, info] of Object.entries(data.previsioni)) {
+                const card = document.createElement('div');
+                card.className = 'card-ruota';
+                const pallineHTML = info.numeri_estrazione.map(num => `<div class="pallina">${num}</div>`).join('');
+                const amboStr = Array.isArray(info.ambo) ? info.ambo.join(' - ') : info.ambo;
+                const ambettiString = info.ambetti.map(a => a.join('-')).join(' | ');
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <span class="ruota-title">${ruota}</span>
+                        <span class="spia-badge">${info.tipo_calcolo}</span>
+                    </div>
+                    <div class="palline-box">${pallineHTML}</div>
+                    <div class="previsione-box">
+                        <div class="prev-item ambata"><div class="prev-label">Ambata</div><div class="prev-value">${info.ambata}</div></div>
+                        <div class="prev-item ambo"><div class="prev-label">Ambo Secco</div><div class="prev-value">${amboStr}</div></div>
+                    </div>
+                    <div class="ambetti-box"><div class="ambetti-valori">Ambetti: ${ambettiString}</div></div>
+                `;
+                container.appendChild(card);
+            }
+
+            // Render Storico Verificato da Python
+            const storicoContainer = document.getElementById('storico-list');
+            storicoContainer.innerHTML = '';
+            
+            if (!data.storico_verificato || data.storico_verificato.length === 0) {
+                storicoContainer.innerHTML = '<p style="font-size:0.85rem; color:#64748b; text-align:center;">Nessuna previsione passata registrata su file.</p>';
+                return;
+            }
+
+            [...data.storico_verificato].reverse().forEach(item => {
+                const minicard = document.createElement('div');
+                minicard.className = 'card-ruota';
+                
+                const isWin = item.stato !== "In gioco";
+                minicard.style.borderLeft = isWin ? '5px solid var(--win-bg)' : '5px solid #64748b';
+                const badgeBg = isWin ? 'var(--win-bg)' : '#f1f5f9';
+                const badgeTxt = isWin ? 'var(--win-txt)' : '#475569';
+
+                minicard.innerHTML = `
+                    <div class="card-header">
+                        <span class="ruota-title" style="color:#475569;">BARI - MILANO (${item.data})</span>
+                        <span class="spia-badge" style="background:${badgeBg}; color:${badgeTxt}; font-weight:bold;">${item.colpi}</span>
+                    </div>
+                    <div class="previsione-box">
+                        <div class="prev-item ambata" style="background:#f8fafc; color:#475569;"><div class="prev-label">Ambata</div><div class="prev-value">${item.ambata}</div></div>
+                        <div class="prev-item ambo" style="background:#f1f5f9; color:#1e293b;"><div class="prev-label">Ambo</div><div class="prev-value">${item.ambo}</div></div>
+                    </div>
+                    <div style="text-align:center; font-size:0.75rem; font-weight:bold; color:${isWin ? 'var(--win-txt)' : '#64748b'}; margin-top:4px;">
+                        Esito: ${item.stato}
+                    </div>
+                `;
+                storicoContainer.appendChild(minicard);
+            });
+
+        } catch (e) { console.error(e); }
+    }
+
+    window.onload = caricaRisultati;
+</script>
+</body>
+</html>
