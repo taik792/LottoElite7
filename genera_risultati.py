@@ -44,7 +44,7 @@ def score_ambo(n1,n2,storico):
     score += ritardo(n2,storico)*2
 
     d=distanza(n1,n2)
-    if d in (9,18,27,36,45):
+    if d in (15,30,45,60,75):
         score+=80
     if d<=2:
         score-=40
