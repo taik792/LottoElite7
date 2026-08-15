@@ -9,26 +9,26 @@
         "ruota_target": "MILANO",
         "trasformazione": "DIAMETRALE",
         "shift": 10,
-        "score_backtest": 131.1846,
-        "cicli_testati": 3917,
+        "score_backtest": 131.1511,
+        "cicli_testati": 3918,
         "ambi_backtest": 218,
         "ambate_backtest": 2330,
         "vittorie_rapide_1_3": 65,
-        "percentuale_ambo": 5.57,
-        "percentuale_ambata": 59.48,
+        "percentuale_ambo": 5.56,
+        "percentuale_ambata": 59.47,
         "top10_configurazioni": [
             {
                 "origine": "FIRENZE",
                 "target": "MILANO",
                 "shift": 10,
                 "metodo": "DIAMETRALE",
-                "score": 131.1846,
-                "cicli": 3917,
+                "score": 131.1511,
+                "cicli": 3918,
                 "ambi": 218,
                 "ambate": 2330,
                 "vittorie_rapide": 65,
-                "percentuale_ambo": 5.57,
-                "percentuale_ambata": 59.48,
+                "percentuale_ambo": 5.56,
+                "percentuale_ambata": 59.47,
                 "percentuale_rapida": 1.66,
                 "ritardi": [
                     4,
@@ -2586,13 +2586,13 @@
                 "target": "VENEZIA",
                 "shift": 14,
                 "metodo": "DIAMETRALE",
-                "score": 130.4417,
-                "cicli": 3917,
+                "score": 130.439,
+                "cicli": 3918,
                 "ambi": 210,
-                "ambate": 2362,
+                "ambate": 2363,
                 "vittorie_rapide": 70,
                 "percentuale_ambo": 5.36,
-                "percentuale_ambata": 60.3,
+                "percentuale_ambata": 60.31,
                 "percentuale_rapida": 1.79,
                 "ritardi": [
                     3,
@@ -5166,7 +5166,8 @@
                     3,
                     4,
                     7,
-                    1
+                    1,
+                    5
                 ]
             },
             {
@@ -5174,13 +5175,13 @@
                 "target": "FIRENZE",
                 "shift": 10,
                 "metodo": "DIAMETRALE",
-                "score": 130.2553,
-                "cicli": 3917,
+                "score": 130.2221,
+                "cicli": 3918,
                 "ambi": 212,
                 "ambate": 2308,
                 "vittorie_rapide": 85,
                 "percentuale_ambo": 5.41,
-                "percentuale_ambata": 58.92,
+                "percentuale_ambata": 58.91,
                 "percentuale_rapida": 2.17,
                 "ritardi": [
                     1,
@@ -7710,13 +7711,13 @@
                 "target": "ROMA",
                 "shift": 33,
                 "metodo": "DIAMETRALE",
-                "score": 130.0357,
-                "cicli": 3917,
+                "score": 130.0026,
+                "cicli": 3918,
                 "ambi": 203,
                 "ambate": 2380,
                 "vittorie_rapide": 83,
                 "percentuale_ambo": 5.18,
-                "percentuale_ambata": 60.76,
+                "percentuale_ambata": 60.75,
                 "percentuale_rapida": 2.12,
                 "ritardi": [
                     1,
@@ -10309,13 +10310,13 @@
                 "target": "BARI",
                 "shift": 20,
                 "metodo": "DIAMETRALE",
-                "score": 129.8979,
-                "cicli": 3917,
+                "score": 129.8647,
+                "cicli": 3918,
                 "ambi": 205,
                 "ambate": 2363,
                 "vittorie_rapide": 81,
                 "percentuale_ambo": 5.23,
-                "percentuale_ambata": 60.33,
+                "percentuale_ambata": 60.31,
                 "percentuale_rapida": 2.07,
                 "ritardi": [
                     4,
@@ -12893,13 +12894,13 @@
                 "target": "NAPOLI",
                 "shift": 24,
                 "metodo": "DIAMETRALE",
-                "score": 129.7115,
-                "cicli": 3917,
+                "score": 129.709,
+                "cicli": 3918,
                 "ambi": 211,
-                "ambate": 2309,
+                "ambate": 2310,
                 "vittorie_rapide": 80,
                 "percentuale_ambo": 5.39,
-                "percentuale_ambata": 58.95,
+                "percentuale_ambata": 58.96,
                 "percentuale_rapida": 2.04,
                 "ritardi": [
                     3,
@@ -15421,7 +15422,8 @@
                     9,
                     2,
                     5,
-                    9
+                    9,
+                    3
                 ]
             },
             {
@@ -15429,13 +15431,13 @@
                 "target": "MILANO",
                 "shift": 37,
                 "metodo": "DIAMETRALE",
-                "score": 129.5251,
-                "cicli": 3917,
+                "score": 129.5227,
+                "cicli": 3918,
                 "ambi": 211,
-                "ambate": 2330,
+                "ambate": 2331,
                 "vittorie_rapide": 67,
                 "percentuale_ambo": 5.39,
-                "percentuale_ambata": 59.48,
+                "percentuale_ambata": 59.49,
                 "percentuale_rapida": 1.71,
                 "ritardi": [
                     6,
@@ -17978,7 +17980,8 @@
                     2,
                     1,
                     6,
-                    6
+                    6,
+                    3
                 ]
             },
             {
@@ -17986,13 +17989,13 @@
                 "target": "FIRENZE",
                 "shift": 39,
                 "metodo": "DIAMETRALE",
-                "score": 129.3796,
-                "cicli": 3917,
+                "score": 129.3772,
+                "cicli": 3918,
                 "ambi": 204,
-                "ambate": 2394,
+                "ambate": 2395,
                 "vittorie_rapide": 62,
                 "percentuale_ambo": 5.21,
-                "percentuale_ambata": 61.12,
+                "percentuale_ambata": 61.13,
                 "percentuale_rapida": 1.58,
                 "ritardi": [
                     3,
@@ -20592,7 +20595,8 @@
                     5,
                     3,
                     3,
-                    8
+                    8,
+                    6
                 ]
             },
             {
@@ -20600,13 +20604,13 @@
                 "target": "MILANO",
                 "shift": 25,
                 "metodo": "DIAMETRALE",
-                "score": 129.2316,
-                "cicli": 3917,
+                "score": 129.2292,
+                "cicli": 3918,
                 "ambi": 213,
-                "ambate": 2310,
+                "ambate": 2311,
                 "vittorie_rapide": 64,
                 "percentuale_ambo": 5.44,
-                "percentuale_ambata": 58.97,
+                "percentuale_ambata": 58.98,
                 "percentuale_rapida": 1.63,
                 "ritardi": [
                     2,
@@ -23131,7 +23135,8 @@
                     6,
                     6,
                     8,
-                    6
+                    6,
+                    7
                 ]
             },
             {
@@ -23139,13 +23144,13 @@
                 "target": "MILANO",
                 "shift": 31,
                 "metodo": "DIAMETRALE",
-                "score": 129.1677,
-                "cicli": 3917,
+                "score": 129.1348,
+                "cicli": 3918,
                 "ambi": 208,
                 "ambate": 2310,
                 "vittorie_rapide": 83,
                 "percentuale_ambo": 5.31,
-                "percentuale_ambata": 58.97,
+                "percentuale_ambata": 58.96,
                 "percentuale_rapida": 2.12,
                 "ritardi": [
                     5,
@@ -25673,51 +25678,51 @@
     "previsioni": {
         "FIRENZE": {
             "numeri_estrazione": [
-                45,
-                26,
-                8,
-                35,
-                65
+                53,
+                31,
+                14,
+                6,
+                81
             ],
-            "tipo_calcolo": "Isotopia V9: FIRENZE 1° numero (45) +10 → 55; diametrale → 10",
-            "ambata": 55,
+            "tipo_calcolo": "Isotopia V9: FIRENZE 1° numero (53) +10 → 63; diametrale → 18",
+            "ambata": 63,
             "ambo": [
-                55,
-                10
+                63,
+                18
             ],
             "ambetti": [
                 [
-                    55,
-                    11
+                    63,
+                    19
                 ],
                 [
-                    55,
-                    9
+                    63,
+                    17
                 ]
             ]
         },
         "MILANO": {
             "numeri_estrazione": [
-                24,
-                48,
-                1,
-                50,
-                58
+                40,
+                64,
+                54,
+                33,
+                80
             ],
-            "tipo_calcolo": "Isotopia V9: FIRENZE 1° numero (45) +10 → 55; diametrale → 10",
-            "ambata": 55,
+            "tipo_calcolo": "Isotopia V9: FIRENZE 1° numero (53) +10 → 63; diametrale → 18",
+            "ambata": 63,
             "ambo": [
-                55,
-                10
+                63,
+                18
             ],
             "ambetti": [
                 [
-                    55,
-                    11
+                    63,
+                    19
                 ],
                 [
-                    55,
-                    9
+                    63,
+                    17
                 ]
             ]
         }
@@ -25725,66 +25730,66 @@
     "storico_verificato": [
         {
             "data": "Concorso Arretrat. -1",
-            "ambata": 7,
-            "ambo": "7 - 52",
+            "ambata": 55,
+            "ambo": "55 - 10",
             "colpi": "1° Colpo",
             "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -2",
-            "ambata": 38,
-            "ambo": "38 - 83",
+            "ambata": 7,
+            "ambo": "7 - 52",
             "colpi": "2° Colpo",
             "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -3",
-            "ambata": 85,
-            "ambo": "85 - 40",
+            "ambata": 38,
+            "ambo": "38 - 83",
             "colpi": "3° Colpo",
             "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -4",
-            "ambata": 11,
-            "ambo": "11 - 56",
+            "ambata": 85,
+            "ambo": "85 - 40",
             "colpi": "4° Colpo",
             "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -5",
-            "ambata": 52,
-            "ambo": "52 - 7",
+            "ambata": 11,
+            "ambo": "11 - 56",
             "colpi": "5° Colpo",
             "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -6",
+            "ambata": 52,
+            "ambo": "52 - 7",
+            "colpi": "6° Colpo",
+            "stato": "In gioco"
+        },
+        {
+            "data": "Concorso Arretrat. -7",
             "ambata": 4,
             "ambo": "4 - 49",
             "colpi": "Esito al 1° colpo",
             "stato": "Ambata Vincente"
         },
         {
-            "data": "Concorso Arretrat. -7",
+            "data": "Concorso Arretrat. -8",
             "ambata": 11,
             "ambo": "11 - 56",
-            "colpi": "7° Colpo",
+            "colpi": "8° Colpo",
             "stato": "In gioco"
         },
         {
-            "data": "Concorso Arretrat. -8",
+            "data": "Concorso Arretrat. -9",
             "ambata": 73,
             "ambo": "73 - 28",
             "colpi": "Esito al 7° colpo",
             "stato": "Ambata Vincente"
-        },
-        {
-            "data": "Concorso Arretrat. -9",
-            "ambata": 9,
-            "ambo": "9 - 54",
-            "colpi": "9° Colpo",
-            "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -10",
