@@ -189,8 +189,8 @@ async function caricaRisultati() {
         const data = await response.json();
 
         const motore = data.motore || {};
-        const versione = motore.versione || data.info_concorso?.numero || 'Lotto Intelligence V9';
-        document.getElementById('titolo').innerText = 'Lotto Intelligence V9';
+        const versione = motore.versione || data.info_concorso?.numero || 'Lotto Intelligence V10';
+        document.getElementById('titolo').innerText = 'Lotto Intelligence V10';
         document.getElementById('info-data').innerText =
             `Estrazione del: ${data.info_concorso?.data || 'N.D.'}`;
 
