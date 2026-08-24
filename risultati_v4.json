@@ -1,31 +1,31 @@
 {
     "info_concorso": {
         "numero": "Lotto Intelligence V10.1",
-        "data": "23/08/2026"
+        "data": "24/08/2026"
     },
     "motore": {
         "versione": "V10.1 - Isotopia adattiva dinamica",
-        "ruota_origine": "FIRENZE",
-        "ruota_target": "VENEZIA",
+        "ruota_origine": "VENEZIA",
+        "ruota_target": "BARI",
         "trasformazione": "DIAMETRALE",
-        "shift": 14,
-        "score_backtest": 137.6191,
-        "score_storico": 130.4257,
-        "score_recente": 148.0541,
+        "shift": 20,
+        "score_backtest": 137.6319,
+        "score_storico": 129.9847,
+        "score_recente": 148.6802,
         "finestra_recente": 600,
         "peso_storico": 0.6,
         "peso_recente": 0.4,
         "cicli_testati": 3923,
-        "ambi_backtest": 210,
-        "ambate_backtest": 2368,
-        "vittorie_rapide_1_3": 70,
-        "percentuale_ambo": 5.35,
-        "percentuale_ambata": 60.36,
-        "percentuale_rapida": 1.78,
-        "ambi_recenti": 40,
-        "ambate_recenti": 375,
-        "percentuale_ambo_recente": 6.77,
-        "percentuale_ambata_recente": 63.45,
+        "ambi_backtest": 206,
+        "ambate_backtest": 2364,
+        "vittorie_rapide_1_3": 81,
+        "percentuale_ambo": 5.25,
+        "percentuale_ambata": 60.26,
+        "percentuale_rapida": 2.06,
+        "ambi_recenti": 41,
+        "ambate_recenti": 351,
+        "percentuale_ambo_recente": 6.94,
+        "percentuale_ambata_recente": 59.39,
         "estrazioni_comuni_coppia": 3933,
         "controllo_allineamento": {
             "allineamento_ok": true,
@@ -199,31 +199,6 @@
         ]
     },
     "previsioni": {
-        "FIRENZE": {
-            "numeri_estrazione": [
-                36,
-                28,
-                47,
-                56,
-                44
-            ],
-            "tipo_calcolo": "Isotopia V10.1: FIRENZE 1° numero (36) + 14 = 50; diametrale = 5",
-            "ambata": 50,
-            "ambo": [
-                50,
-                5
-            ],
-            "ambetti": [
-                [
-                    50,
-                    6
-                ],
-                [
-                    50,
-                    4
-                ]
-            ]
-        },
         "VENEZIA": {
             "numeri_estrazione": [
                 72,
@@ -232,20 +207,45 @@
                 85,
                 52
             ],
-            "tipo_calcolo": "Isotopia V10.1: FIRENZE 1° numero (36) + 14 = 50; diametrale = 5",
-            "ambata": 50,
+            "tipo_calcolo": "Isotopia V10.1: VENEZIA 1° numero (72) + 20 = 2; diametrale = 47",
+            "ambata": 2,
             "ambo": [
-                50,
-                5
+                2,
+                47
             ],
             "ambetti": [
                 [
-                    50,
-                    6
+                    2,
+                    48
                 ],
                 [
-                    50,
-                    4
+                    2,
+                    46
+                ]
+            ]
+        },
+        "BARI": {
+            "numeri_estrazione": [
+                61,
+                62,
+                19,
+                46,
+                81
+            ],
+            "tipo_calcolo": "Isotopia V10.1: VENEZIA 1° numero (72) + 20 = 2; diametrale = 47",
+            "ambata": 2,
+            "ambo": [
+                2,
+                47
+            ],
+            "ambetti": [
+                [
+                    2,
+                    48
+                ],
+                [
+                    2,
+                    46
                 ]
             ]
         }
@@ -253,73 +253,73 @@
     "storico_verificato": [
         {
             "data": "Concorso Arretrat. -1",
-            "ambata": 15,
-            "ambo": "15 - 60",
+            "ambata": 11,
+            "ambo": "11 - 56",
             "colpi": "1° Colpo",
             "stato": "In gioco"
         },
         {
             "data": "Concorso Arretrat. -2",
-            "ambata": 81,
-            "ambo": "81 - 36",
+            "ambata": 27,
+            "ambo": "27 - 72",
             "colpi": "Esito al 1° colpo",
             "stato": "Ambata Vincente"
         },
         {
             "data": "Concorso Arretrat. -3",
-            "ambata": 1,
-            "ambo": "1 - 46",
+            "ambata": 46,
+            "ambo": "46 - 1",
             "colpi": "Esito al 2° colpo",
             "stato": "Ambata Vincente"
         },
         {
             "data": "Concorso Arretrat. -4",
-            "ambata": 46,
-            "ambo": "46 - 1",
-            "colpi": "Esito al 3° colpo",
-            "stato": "Ambata Vincente"
-        },
-        {
-            "data": "Concorso Arretrat. -5",
-            "ambata": 67,
-            "ambo": "67 - 22",
-            "colpi": "Esito al 3° colpo",
-            "stato": "Ambata Vincente"
-        },
-        {
-            "data": "Concorso Arretrat. -6",
-            "ambata": 59,
-            "ambo": "59 - 14",
+            "ambata": 62,
+            "ambo": "62 - 17",
             "colpi": "Esito al 2° colpo",
             "stato": "Ambata Vincente"
         },
         {
-            "data": "Concorso Arretrat. -7",
-            "ambata": 11,
-            "ambo": "11 - 56",
-            "colpi": "Esito al 1° colpo",
+            "data": "Concorso Arretrat. -5",
+            "ambata": 49,
+            "ambo": "49 - 4",
+            "colpi": "Esito al 5° colpo",
             "stato": "Ambata Vincente"
         },
         {
+            "data": "Concorso Arretrat. -6",
+            "ambata": 52,
+            "ambo": "52 - 7",
+            "colpi": "Esito al 6° colpo",
+            "stato": "Ambata Vincente"
+        },
+        {
+            "data": "Concorso Arretrat. -7",
+            "ambata": 37,
+            "ambo": "37 - 82",
+            "colpi": "7° Colpo",
+            "stato": "In gioco"
+        },
+        {
             "data": "Concorso Arretrat. -8",
-            "ambata": 42,
-            "ambo": "42 - 87",
-            "colpi": "Esito al 4° colpo",
+            "ambata": 56,
+            "ambo": "56 - 11",
+            "colpi": "Esito al 5° colpo",
             "stato": "Ambata Vincente"
         },
         {
             "data": "Concorso Arretrat. -9",
-            "ambata": 89,
-            "ambo": "89 - 44",
-            "colpi": "Esito al 1° colpo",
+            "ambata": 43,
+            "ambo": "43 - 88",
+            "colpi": "Esito al 2° colpo",
             "stato": "Ambata Vincente"
         },
         {
             "data": "Concorso Arretrat. -10",
-            "ambata": 15,
-            "ambo": "15 - 60",
-            "colpi": "Esito al 1° colpo",
-            "stato": "Ambata Vincente"
+            "ambata": 66,
+            "ambo": "66 - 21",
+            "colpi": "10° Colpo",
+            "stato": "Ciclo concluso (No esito)"
         }
     ]
 }
