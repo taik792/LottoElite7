@@ -1,347 +1,150 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Intelligence V11</title>
-    <style>
-        :root {
-            --primary:#1e3a8a;
-            --accent:#3b82f6;
-            --bg:#f8fafc;
-            --card:#fff;
-            --text:#1e293b;
-            --muted:#64748b;
-            --ambata-bg:#ffedd5;
-            --ambata-txt:#ea580c;
-            --ambo-bg:#dbeafe;
-            --ambo-txt:#1d4ed8;
-            --win-bg:#d1fae5;
-            --win-txt:#065f46;
-            --border:#cbd5e1;
-        }
-        * { box-sizing:border-box; }
-        body {
-            font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-            background:var(--bg);
-            color:var(--text);
-            margin:0;
-            padding:12px;
-        }
-        .container { max-width:600px; margin:0 auto; }
-        header {
-            text-align:center;
-            margin-bottom:16px;
-            background:linear-gradient(135deg,#1e3a8a,#1d4ed8);
-            padding:16px;
-            border-radius:12px;
-            color:#fff;
-        }
-        header h1 { margin:0 0 4px; font-size:1.3rem; }
-        .info-concorso { font-size:.85rem; color:#bfdbfe; margin:0; }
-        .section-title {
-            font-size:1.05rem;
-            font-weight:700;
-            margin:20px 0 10px;
-            color:#0f172a;
-            text-transform:uppercase;
-            border-bottom:2px solid var(--border);
-            padding-bottom:4px;
-        }
-        .motore-box {
-            background:#fff;
-            border-radius:12px;
-            padding:12px;
-            margin-bottom:12px;
-            box-shadow:0 4px 6px -1px rgba(0,0,0,.05);
-            border-left:5px solid var(--accent);
-        }
-        .motore-title {
-            font-weight:800;
-            color:var(--primary);
-            margin-bottom:8px;
-        }
-        .stats {
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:6px;
-        }
-        .stat {
-            background:#f8fafc;
-            border:1px solid #e2e8f0;
-            border-radius:8px;
-            padding:7px 4px;
-            text-align:center;
-        }
-        .stat-label { font-size:.64rem; color:var(--muted); text-transform:uppercase; font-weight:700; }
-        .stat-value { font-size:.95rem; font-weight:800; margin-top:2px; }
-        .card-ruota {
-            background:var(--card);
-            border-radius:12px;
-            padding:14px;
-            box-shadow:0 4px 6px -1px rgba(0,0,0,.05);
-            border-left:5px solid var(--accent);
-            margin-bottom:12px;
-        }
-        .card-header {
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            gap:8px;
-            margin-bottom:8px;
-        }
-        .ruota-title {
-            font-size:1.05rem;
-            font-weight:700;
-            text-transform:uppercase;
-            color:var(--primary);
-        }
-        .spia-badge {
-            background:#f1f5f9;
-            color:#475569;
-            font-size:.68rem;
-            padding:4px 6px;
-            border-radius:4px;
-            font-weight:700;
-            text-align:right;
-        }
-        .palline-box {
-            display:flex;
-            gap:6px;
-            margin-bottom:12px;
-            flex-wrap:wrap;
-        }
-        .pallina {
-            width:30px;
-            height:30px;
-            background:#f1f5f9;
-            border-radius:50%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-weight:600;
-            font-size:.85rem;
-        }
-        .previsione-box {
-            display:flex;
-            gap:8px;
-            margin-bottom:8px;
-        }
-        .prev-item {
-            flex:1;
-            padding:8px;
-            border-radius:8px;
-            text-align:center;
-        }
-        .prev-item.ambata { background:var(--ambata-bg); color:var(--ambata-txt); }
-        .prev-item.ambo { background:var(--ambo-bg); color:var(--ambo-txt); }
-        .prev-label { font-size:.7rem; text-transform:uppercase; font-weight:700; margin-bottom:2px; }
-        .prev-value { font-size:1.1rem; font-weight:800; }
-        .ambetti-box {
-            background:#fafafa;
-            border:1px solid #e5e7eb;
-            padding:6px;
-            border-radius:8px;
-            font-size:.75rem;
-            text-align:center;
-        }
-        .ambetti-valori { color:#4b5563; font-weight:600; }
-        .storico-info {
-            font-size:.72rem;
-            color:var(--muted);
-            margin-top:6px;
-        }
-        .error {
-            background:#fee2e2;
-            color:#991b1b;
-            padding:12px;
-            border-radius:10px;
-            font-size:.85rem;
-        }
-        @media (max-width:420px) {
-            .stats { grid-template-columns:repeat(2,1fr); }
-            .card-header { align-items:flex-start; }
-            .spia-badge { max-width:58%; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lotto Intelligence V11</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6fa;color:#263238;font-family:Arial,Helvetica,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:18px}
+.header{background:#0737b8;color:#fff;border-radius:14px;padding:18px;text-align:center;box-shadow:0 3px 12px #0002}
+.header h1{margin:0;font-size:28px}.header .date{margin-top:6px;font-size:14px;opacity:.9}
+.section-title{margin:24px 2px 10px;font-size:21px;font-weight:800;border-bottom:3px solid #cbd3df;padding-bottom:7px}
+.card{background:#fff;border-radius:14px;margin:10px 0;padding:16px;box-shadow:0 2px 10px #0001;border-left:5px solid #1769e0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:#f7f9fc;border-radius:10px;padding:11px;text-align:center}
+.stat .lab{font-size:12px;color:#687584;font-weight:700;text-transform:uppercase}.stat .val{font-size:21px;font-weight:800;margin-top:5px}
+.pred-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.wheel{font-size:21px;font-weight:900;color:#183f86}
+.calc{background:#eef3fb;padding:10px;border-radius:9px;font-size:13px;text-align:right}
+.nums{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.num{width:42px;height:42px;border-radius:50%;background:#f0f3f7;display:flex;align-items:center;justify-content:center;font-weight:800}
+.pred-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.box{border-radius:10px;padding:12px;text-align:center}.ambata{background:#fff0d8}.ambo{background:#dcecff}
+.box small{display:block;font-weight:800;color:#596775}.box strong{display:block;font-size:24px;margin-top:4px}
+.ambetti{text-align:center;background:#f8fafc;border-radius:9px;padding:9px;margin-top:9px;font-weight:600}
+.history{border-left:5px solid #8795a8}.history.win{border-left-color:#31c982}.history.live{border-left-color:#50647e}
+.hist-head{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:800}
+.badge{padding:7px 10px;border-radius:8px;font-size:12px;background:#edf0f5}.badge.win{background:#c9f5df;color:#08643d}
+.hist-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.hist-box{background:#f7f9fc;border-radius:9px;padding:10px;text-align:center}.hist-box small{display:block;color:#65717e;font-weight:700}.hist-box strong{font-size:20px}
+.result{text-align:center;font-weight:800;margin-top:9px}.green{color:#08704b}
+.top table{width:100%;border-collapse:collapse;font-size:13px}.top th,.top td{padding:8px;border-bottom:1px solid #e1e5eb;text-align:center}.top th{background:#f2f5f9}
+.error{background:#ffe6e6;color:#9b1c1c;padding:14px;border-radius:10px;font-weight:700}
+@media(max-width:700px){.wrap{padding:10px}.grid{grid-template-columns:repeat(2,1fr)}.pred-head{display:block}.calc{text-align:left;margin-top:8px}.pred-grid,.hist-grid{grid-template-columns:1fr}.header h1{font-size:23px}.wheel{margin-bottom:5px}}
+</style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1 id="titolo">Lotto Intelligence V11</h1>
-        <p id="info-data" class="info-concorso">Caricamento...</p>
-    </header>
-
-    <div id="motore-container"></div>
-
-    <div class="section-title">Previsione in Corso</div>
-    <div id="ruote-list"></div>
-
-    <div class="section-title" style="margin-top:30px;">Archivio Storico Blindato</div>
-    <div id="storico-list"></div>
-</div>
+<div class="wrap" id="app"><div class="card">Caricamento V11...</div></div>
 
 <script>
-async function caricaRisultati() {
-    try {
-        const response = await fetch('risultati_v4.json?t=' + Date.now(), { cache:'no-store' });
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const data = await response.json();
+const FILE="risultati_v4.json";
 
-        const motore = data.motore || {};
-        const versione = motore.versione || data.info_concorso?.numero || 'Lotto Intelligence V10';
-        document.getElementById('titolo').innerText = 'Lotto Intelligence V11';
-        document.getElementById('info-data').innerText =
-            `Estrazione del: ${data.info_concorso?.data || 'N.D.'}`;
-
-        const motoreContainer = document.getElementById('motore-container');
-        if (motore.ruota_origine && motore.ruota_target) {
-            motoreContainer.innerHTML = `
-                <div class="motore-box">
-                    <div class="motore-title">
-                        ${versione}
-                        <span style="font-size:.72rem;color:#64748b;font-weight:600;">
-                            · ${motore.ruota_origine} → ${motore.ruota_target}
-                        </span>
-                    </div>
-                    <div class="stats">
-                        <div class="stat">
-                            <div class="stat-label">Shift</div>
-                            <div class="stat-value">+${motore.shift ?? 'N.D.'}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Score</div>
-                            <div class="stat-value">${motore.score_backtest ?? 'N.D.'}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Cicli</div>
-                            <div class="stat-value">${motore.cicli_testati ?? 'N.D.'}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">Ambi</div>
-                            <div class="stat-value">${motore.ambi_backtest ?? 'N.D.'}</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">% Ambo</div>
-                            <div class="stat-value">${motore.percentuale_ambo ?? 'N.D.'}%</div>
-                        </div>
-                        <div class="stat">
-                            <div class="stat-label">% Ambata</div>
-                            <div class="stat-value">${motore.percentuale_ambata ?? 'N.D.'}%</div>
-                        </div>
-                    </div>
-                </div>`;
-        } else {
-            motoreContainer.innerHTML = '';
-        }
-
-        const container = document.getElementById('ruote-list');
-        container.innerHTML = '';
-
-        const previsioni = data.previsioni || {};
-        const ruote = Object.entries(previsioni);
-
-        if (!ruote.length) {
-            container.innerHTML = '<div class="error">Nessuna previsione presente nel file risultati_v4.json.</div>';
-        }
-
-        for (const [ruota, info] of ruote) {
-            const card = document.createElement('div');
-            card.className = 'card-ruota';
-
-            const numeri = Array.isArray(info.numeri_estrazione) ? info.numeri_estrazione : [];
-            const pallineHTML = numeri.map(num => `<div class="pallina">${num}</div>`).join('');
-            const amboStr = Array.isArray(info.ambo) ? info.ambo.join(' - ') : (info.ambo ?? 'N.D.');
-            const ambetti = Array.isArray(info.ambetti) ? info.ambetti : [];
-            const ambettiString = ambetti.map(a => Array.isArray(a) ? a.join(' - ') : a).join(' | ');
-
-            card.innerHTML = `
-                <div class="card-header">
-                    <span class="ruota-title">${ruota}</span>
-                    <span class="spia-badge">${info.tipo_calcolo || 'Isotopia V9'}</span>
-                </div>
-                <div class="palline-box">${pallineHTML}</div>
-                <div class="previsione-box">
-                    <div class="prev-item ambata">
-                        <div class="prev-label">Ambata</div>
-                        <div class="prev-value">${info.ambata ?? 'N.D.'}</div>
-                    </div>
-                    <div class="prev-item ambo">
-                        <div class="prev-label">Ambo Secco</div>
-                        <div class="prev-value">${amboStr}</div>
-                    </div>
-                </div>
-                <div class="ambetti-box">
-                    <div class="ambetti-valori">Ambetti: ${ambettiString || 'N.D.'}</div>
-                </div>
-            `;
-            container.appendChild(card);
-        }
-
-        const storicoContainer = document.getElementById('storico-list');
-        storicoContainer.innerHTML = '';
-
-        const storico = Array.isArray(data.storico_verificato) ? data.storico_verificato : [];
-        if (!storico.length) {
-            storicoContainer.innerHTML =
-                '<p style="font-size:.85rem;color:#64748b;text-align:center;">Nessuna previsione passata registrata.</p>';
-            return;
-        }
-
-        const origine = motore.ruota_origine || ruote[0]?.[0] || '';
-        const target = motore.ruota_target || ruote[1]?.[0] || '';
-        const coppia = `${origine} - ${target}`;
-
-        [...storico].reverse().forEach(item => {
-            const minicard = document.createElement('div');
-            minicard.className = 'card-ruota';
-
-            const isWin = item.stato && item.stato !== 'In gioco';
-            minicard.style.borderLeft = isWin
-                ? '5px solid var(--win-bg)'
-                : '5px solid #64748b';
-
-            const badgeBg = isWin ? 'var(--win-bg)' : '#f1f5f9';
-            const badgeTxt = isWin ? 'var(--win-txt)' : '#475569';
-
-            minicard.innerHTML = `
-                <div class="card-header">
-                    <span class="ruota-title" style="color:#475569;">
-                        ${coppia} (${item.data || 'N.D.'})
-                    </span>
-                    <span class="spia-badge"
-                          style="background:${badgeBg};color:${badgeTxt};font-weight:bold;">
-                        ${item.colpi || ''}
-                    </span>
-                </div>
-                <div class="previsione-box">
-                    <div class="prev-item ambata"
-                         style="background:#f8fafc;color:#475569;">
-                        <div class="prev-label">Ambata</div>
-                        <div class="prev-value">${item.ambata ?? 'N.D.'}</div>
-                    </div>
-                    <div class="prev-item ambo"
-                         style="background:#f1f5f9;color:#1e293b;">
-                        <div class="prev-label">Ambo</div>
-                        <div class="prev-value">${item.ambo ?? 'N.D.'}</div>
-                    </div>
-                </div>
-                <div style="text-align:center;font-size:.75rem;font-weight:bold;
-                            color:${isWin ? 'var(--win-txt)' : '#64748b'};margin-top:4px;">
-                    Esito: ${item.stato || 'N.D.'}
-                </div>
-            `;
-            storicoContainer.appendChild(minicard);
-        });
-
-    } catch (e) {
-        console.error(e);
-        document.getElementById('ruote-list').innerHTML =
-            '<div class="error">Errore nel caricamento di risultati_v4.json. Controlla che il file sia presente nella root del progetto.</div>';
-    }
+function esc(v){
+  return String(v ?? "").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
+function fmt(v,dec=2){
+  if(v===null || v===undefined || v==="") return "N.D.";
+  const n=Number(v);
+  return Number.isFinite(n) ? n.toFixed(dec).replace(".",",") : esc(v);
+}
+function pct(v){
+  if(v===null || v===undefined || v==="") return "N.D.%";
+  return fmt(v,2)+"%";
+}
+function statoClass(s){
+  if(String(s).toUpperCase().includes("AMBO SECCO")) return "win";
+  if(String(s).toUpperCase().includes("IN GIOCO")) return "live";
+  return "";
+}
+function badge(s){
+  const up=String(s||"").toUpperCase();
+  if(up.includes("AMBO SECCO")) return '<span class="badge win">AMBO SECCO</span>';
+  if(up.includes("AMBATA")) return '<span class="badge win">AMBATA</span>';
+  if(up.includes("IN GIOCO")) return '<span class="badge">IN GIOCO</span>';
+  return '<span class="badge">CICLO CONCLUSO</span>';
+}
+function stat(label,val){
+  return `<div class="stat"><div class="lab">${esc(label)}</div><div class="val">${esc(val)}</div></div>`;
+}
+function prediction(ruota,p){
+  if(!p) return "";
+  const nums=(p.numeri_estrazione||[]).map(n=>`<span class="num">${esc(n)}</span>`).join("");
+  const ambo=Array.isArray(p.ambo)?p.ambo.join(" - "):p.ambo;
+  const ambetti=(p.ambetti||[]).map(a=>Array.isArray(a)?a.join(" - "):a).join(" | ");
+  return `<div class="card">
+    <div class="pred-head"><div class="wheel">${esc(ruota)}</div><div class="calc">${esc(p.tipo_calcolo||"")}</div></div>
+    <div class="nums">${nums}</div>
+    <div class="pred-grid">
+      <div class="box ambata"><small>AMBATA</small><strong>${esc(p.ambata)}</strong></div>
+      <div class="box ambo"><small>AMBO SECCO</small><strong>${esc(ambo)}</strong></div>
+    </div>
+    <div class="ambetti">Ambetti: ${esc(ambetti)}</div>
+  </div>`;
+}
+function historyCard(x){
+  const s=x.stato||"";
+  const win=String(s).toUpperCase().includes("AMBO SECCO");
+  return `<div class="card history ${statoClass(s)}">
+    <div class="hist-head"><span>${esc(x.data||"Concorso")}</span>${badge(s)}</div>
+    <div class="hist-grid">
+      <div class="hist-box"><small>AMBATA</small><strong>${esc(x.ambata)}</strong></div>
+      <div class="hist-box"><small>AMBO</small><strong>${esc(x.ambo)}</strong></div>
+    </div>
+    <div class="result ${win?"green":""}">Esito: ${esc(s)}${x.colpo ? " · "+esc(x.colpo)+"° colpo" : ""}</div>
+  </div>`;
+}
+async function load(){
+  try{
+    const r=await fetch(FILE+"?v="+Date.now(),{cache:"no-store"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const d=await r.json(), m=d.motore||{}, p=d.previsioni||{};
+    const origine=m.ruota_origine||"";
+    const target=m.ruota_target||"";
+    const ambo=p[origine]?.ambo||[];
+    const storico=m;
+    let html=`<div class="header"><h1>Lotto Intelligence V11</h1><div class="date">Estrazione del ${esc(d.info_concorso?.data||"")}</div></div>`;
 
-window.onload = caricaRisultati;
+    html+=`<div class="card">
+      <div style="font-size:17px;font-weight:900;margin-bottom:12px">V11 - Isotopia ambo secco <span style="color:#607080;font-weight:700">· ${esc(origine)} → ${esc(target)}</span></div>
+      <div class="grid">
+        ${stat("Shift","+"+(m.shift??"N.D."))}
+        ${stat("Score",fmt(m.score_backtest,4))}
+        ${stat("Cicli",m.cicli_testati??"N.D.")}
+        ${stat("Ambi 1° colpo",m.ambi_1_colpo??"N.D.")}
+        ${stat("% ambo 1°",pct(m.percentuale_1_colpo))}
+        ${stat("% ambo ≤3",pct(m.percentuale_entro_3))}
+        ${stat("Ambi ≤3",m.ambi_entro_3??"N.D.")}
+        ${stat("Ambi ≤5",m.ambi_entro_5??"N.D.")}
+        ${stat("Ambi ≤9",m.ambi_entro_9??"N.D.")}
+      </div>
+    </div>`;
+
+    html+=`<div class="section-title">PREVISIONE IN CORSO</div>`;
+    html+=prediction(origine,p[origine]);
+    html+=prediction(target,p[target]);
+
+    html+=`<div class="section-title">ARCHIVIO STORICO BLINDATO</div>`;
+    const hist=d.storico_verificato||[];
+    if(hist.length) html+=hist.map(historyCard).join("");
+    else html+=`<div class="card">Nessun dato storico disponibile.</div>`;
+
+    const top=m.top10_configurazioni||[];
+    if(top.length){
+      html+=`<div class="section-title">TOP 10 CONFIGURAZIONI V11</div><div class="card top"><table>
+      <thead><tr><th>#</th><th>Ruote</th><th>Shift</th><th>Score</th><th>1° colpo</th><th>≤3</th><th>≤9</th></tr></thead><tbody>`;
+      html+=top.map(x=>`<tr><td>${esc(x.posizione)}</td><td>${esc(x.origine)} → ${esc(x.target)}</td><td>+${esc(x.shift)}</td><td>${fmt(x.score,4)}</td><td>${pct(x.percentuale_1_colpo)}</td><td>${pct(x.percentuale_entro_3)}</td><td>${pct(x.percentuale_entro_9)}</td></tr>`).join("");
+      html+=`</tbody></table></div>`;
+    }
+
+    html+=`<div class="card" style="font-size:12px;color:#697582;text-align:center">Motore: ${esc(m.versione||"V11")} · Trasformazione: ${esc(m.trasformazione||"DIAMETRALE")} · File dati: risultati_v4.json</div>`;
+    document.getElementById("app").innerHTML=html;
+  }catch(e){
+    document.getElementById("app").innerHTML=`<div class="error">Errore caricamento V11: ${esc(e.message)}<br><br>Controlla che <b>risultati_v4.json</b> sia presente nella root del progetto.</div>`;
+  }
+}
+load();
 </script>
 </body>
 </html>
