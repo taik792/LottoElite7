@@ -1,242 +1,1468 @@
-import json, os
+import json
+import os
 from datetime import datetime
 
-RUOTE=["BARI","CAGLIARI","FIRENZE","GENOVA","MILANO","NAPOLI","PALERMO","ROMA","TORINO","VENEZIA","NAZIONALE"]
-CICLO_MAX=9
-SHIFT_CANDIDATI=range(1,46)
-FINESTRA_RECENTE=600
-PESO_STORICO=0.60
-PESO_RECENTE=0.40
+# ============================================================
+# LOTTO INTELLIGENCE V11
+# ISOTOPIA - MOTORE ORIENTATO ALL'AMBO SECCO
+# ============================================================
 
-def fuori_90(n):
-    n=int(n)
-    while n>90:n-=90
-    while n<=0:n+=90
-    return n
+RUOTE = [
+    "BARI", "CAGLIARI", "FIRENZE", "GENOVA", "MILANO",
+    "NAPOLI", "PALERMO", "ROMA", "TORINO", "VENEZIA",
+    "NAZIONALE"
+]
 
-def diametrale(n):
-    n=int(n)
-    return n+45 if n<=45 else n-45
+CICLO_MAX = 9
+SHIFT_CANDIDATI = range(1, 46)
 
-def prepara_ruote(a):
-    return {str(k).upper():v for k,v in a.items() if isinstance(v,list)}
+# Finestra recente usata per capire se una configurazione
+# sta funzionando anche nella fase più recente dello storico.
+FINESTRA_RECENTE = 600
 
-def numeri_estrazione(lista,i):
-    if not isinstance(lista,list) or i<0 or i>=len(lista): return []
-    r=lista[i]
-    if not isinstance(r,list): return []
-    try:return [int(x) for x in r[:5]]
-    except (ValueError,TypeError):return []
+PESO_STORICO = 0.45
+PESO_RECENTE = 0.55
+
+
+# ============================================================
+# FUNZIONI NUMERICHE
+# ============================================================
+
+def fuori_90(numero):
+    numero = int(numero)
+    while numero > 90:
+        numero -= 90
+    while numero <= 0:
+        numero += 90
+    return numero
+
+
+def diametrale(numero):
+    numero = int(numero)
+    return numero + 45 if numero <= 45 else numero - 45
+
+
+def costruisci_ambo(numero_origine, shift):
+    ambata = fuori_90(numero_origine + shift)
+    secondo = diametrale(ambata)
+
+    if ambata == secondo:
+        return ambata, None
+
+    return ambata, secondo
+
+
+# ============================================================
+# LETTURA / NORMALIZZAZIONE
+# ============================================================
+
+def prepara_ruote(archivio):
+    return {
+        str(k).upper(): v
+        for k, v in archivio.items()
+        if isinstance(v, list)
+    }
+
+
+def numeri_estrazione(lista, indice):
+    if not isinstance(lista, list):
+        return []
+
+    if indice < 0 or indice >= len(lista):
+        return []
+
+    riga = lista[indice]
+
+    if not isinstance(riga, list):
+        return []
+
+    try:
+        return [int(x) for x in riga[:5]]
+    except (ValueError, TypeError):
+        return []
+
 
 def ultima_estrazione(lista):
-    return numeri_estrazione(lista,len(lista)-1)
+    if not lista:
+        return []
 
-def costruisci_ambo(orig,shift):
-    a=fuori_90(orig+shift); b=diametrale(a)
-    return (a,None) if a==b else (a,b)
+    return numeri_estrazione(
+        lista,
+        len(lista) - 1
+    )
 
-# Allineamento: per il backtest si usa sempre la coda comune.
-# La previsione corrente, invece, usa SEMPRE [-1] della singola ruota.
-def comune(a,b): return min(len(a),len(b))
 
-def idx_comune(lista,pos,n):
-    i=len(lista)-n+pos
-    return i if 0<=i<len(lista) else None
+# ============================================================
+# ALLINEAMENTO
+# ============================================================
 
-def nums_comuni(lista,pos,n):
-    i=idx_comune(lista,pos,n)
-    return numeri_estrazione(lista,i) if i is not None else []
+def lunghezza_comune(lista_a, lista_b):
+    return min(
+        len(lista_a),
+        len(lista_b)
+    )
 
-def controlla(archivio,ruote):
-    lens={r:len(archivio[r]) for r in ruote}
-    vals=list(lens.values())
-    return {"allineamento_ok":min(vals)==max(vals),
-            "lunghezza_minima":min(vals),
-            "lunghezza_massima":max(vals),
-            "differenza":max(vals)-min(vals),
-            "lunghezze_ruote":lens}
 
-def valuta(a,b,shift,fine,inizio=0):
-    n=comune(a,b)
-    ultimo=fine-CICLO_MAX-1
-    if n<=CICLO_MAX+2 or ultimo<inizio:return None
-    ambi=ambate=rapide=cicli=0
-    rit_ambo=[]; rit_ambata=[]
-    for pos in range(inizio,ultimo+1):
-        x=nums_comuni(a,pos,n)
-        if not x:continue
-        amb,sec=costruisci_ambo(x[0],shift)
-        if sec is None:continue
-        cicli+=1; hit_a=False; hit_ambo=False; ca=cb=None
-        for c in range(1,CICLO_MAX+1):
-            p=pos+c
-            if p>=n:break
-            xa=nums_comuni(a,p,n); xb=nums_comuni(b,p,n)
-            unione=set(xa+xb)
-            if amb in unione and not hit_a:
-                hit_a=True; ca=c
-            if (amb in xa and sec in xa) or (amb in xb and sec in xb):
-                hit_ambo=True; cb=c; break
-        if hit_ambo:
-            ambi+=1; rit_ambo.append(cb)
-            if cb<=3:rapide+=1
-        elif hit_a:
-            ambate+=1; rit_ambata.append(ca)
-    if cicli==0:return None
-    pa=ambi/cicli; paa=ambate/cicli; pr=rapide/cicli
-    return {"score":round(pa*1000+pr*250+paa*120,4),
-            "cicli":cicli,"ambi":ambi,"ambate":ambate,
-            "vittorie_rapide":rapide,
-            "percentuale_ambo":round(pa*100,2),
-            "percentuale_ambata":round(paa*100,2),
-            "percentuale_rapida":round(pr*100,2),
-            "ritardi_ambo":rit_ambo,"ritardi_ambata":rit_ambata}
+def indice_coda_comune(lista, posizione, totale_comune):
+    """
+    Traduce la posizione della coda comune nell'indice reale
+    della singola ruota.
 
-def precedente():
-    if not os.path.exists("risultati_v4.json"):return None
+    Questo evita il bug V10 che faceva leggere una estrazione
+    vecchia quando due ruote avevano lunghezze diverse.
+    """
+    indice = (
+        len(lista)
+        - totale_comune
+        + posizione
+    )
+
+    if indice < 0 or indice >= len(lista):
+        return None
+
+    return indice
+
+
+def numeri_coda_comune(
+    lista,
+    posizione,
+    totale_comune
+):
+    indice = indice_coda_comune(
+        lista,
+        posizione,
+        totale_comune
+    )
+
+    if indice is None:
+        return []
+
+    return numeri_estrazione(
+        lista,
+        indice
+    )
+
+
+def controllo_allineamento(
+    archivio_pulito,
+    ruote
+):
+    lunghezze = {
+        ruota: len(archivio_pulito[ruota])
+        for ruota in ruote
+    }
+
+    valori = list(lunghezze.values())
+
+    return {
+        "allineamento_ok": (
+            min(valori) == max(valori)
+        ),
+        "lunghezza_minima": min(valori),
+        "lunghezza_massima": max(valori),
+        "differenza": (
+            max(valori) - min(valori)
+        ),
+        "lunghezze_ruote": lunghezze
+    }
+
+
+# ============================================================
+# VERIFICA AMBO SECCO
+# ============================================================
+
+def ambo_secco_su_ruota(
+    numeri,
+    ambata,
+    secondo
+):
+    """
+    L'ambo è considerato SECCO solo se entrambi i numeri
+    sono presenti nella stessa estrazione della stessa ruota.
+    """
+    insieme = set(numeri)
+
+    return (
+        ambata in insieme
+        and secondo in insieme
+    )
+
+
+# ============================================================
+# BACKTEST AMBO SECCO
+# ============================================================
+
+def valuta_configurazione(
+    lista_origine,
+    lista_target,
+    shift,
+    posizione_fine,
+    posizione_inizio=0
+):
+    """
+    Valuta una configurazione soltanto sulla capacità di
+    produrre l'ambo secco.
+
+    Per ogni ciclo:
+      - 1° colpo
+      - 2° colpo
+      - 3° colpo
+      - 4°/5° colpo
+      - 6°-9° colpo
+
+    viene registrato il PRIMO colpo in cui l'ambo esce
+    completo su una delle due ruote.
+
+    Le ambate NON entrano nel punteggio principale.
+    """
+
+    totale_comune = lunghezza_comune(
+        lista_origine,
+        lista_target
+    )
+
+    ultimo_ciclo = (
+        posizione_fine
+        - CICLO_MAX
+        - 1
+    )
+
+    if (
+        totale_comune <= CICLO_MAX + 2
+        or ultimo_ciclo < posizione_inizio
+    ):
+        return None
+
+    cicli = 0
+
+    ambo_1 = 0
+    ambo_3 = 0
+    ambo_5 = 0
+    ambo_9 = 0
+
+    ritardi_ambo = []
+
+    for posizione in range(
+        posizione_inizio,
+        ultimo_ciclo + 1
+    ):
+        estrazione_origine = (
+            numeri_coda_comune(
+                lista_origine,
+                posizione,
+                totale_comune
+            )
+        )
+
+        if not estrazione_origine:
+            continue
+
+        numero_base = estrazione_origine[0]
+
+        ambata, secondo = costruisci_ambo(
+            numero_base,
+            shift
+        )
+
+        if secondo is None:
+            continue
+
+        cicli += 1
+
+        colpo_vincente = None
+
+        for colpo in range(
+            1,
+            CICLO_MAX + 1
+        ):
+            futura_posizione = (
+                posizione + colpo
+            )
+
+            if futura_posizione >= totale_comune:
+                break
+
+            nums_origine = (
+                numeri_coda_comune(
+                    lista_origine,
+                    futura_posizione,
+                    totale_comune
+                )
+            )
+
+            nums_target = (
+                numeri_coda_comune(
+                    lista_target,
+                    futura_posizione,
+                    totale_comune
+                )
+            )
+
+            if (
+                ambo_secco_su_ruota(
+                    nums_origine,
+                    ambata,
+                    secondo
+                )
+                or
+                ambo_secco_su_ruota(
+                    nums_target,
+                    ambata,
+                    secondo
+                )
+            ):
+                colpo_vincente = colpo
+                break
+
+        if colpo_vincente is not None:
+            ritardi_ambo.append(
+                colpo_vincente
+            )
+
+            if colpo_vincente == 1:
+                ambo_1 += 1
+
+            if colpo_vincente <= 3:
+                ambo_3 += 1
+
+            if colpo_vincente <= 5:
+                ambo_5 += 1
+
+            ambo_9 += 1
+
+    if cicli == 0:
+        return None
+
+    p1 = ambo_1 / cicli
+    p3 = ambo_3 / cicli
+    p5 = ambo_5 / cicli
+    p9 = ambo_9 / cicli
+
+    # ========================================================
+    # SCORE V11
+    #
+    # L'ambo secco rapido vale molto più dell'ambo tardivo.
+    #
+    # 1° colpo  -> peso massimo
+    # entro 3   -> peso alto
+    # entro 5   -> peso medio
+    # entro 9   -> peso basso
+    #
+    # Non viene usata la percentuale di ambata come componente
+    # positiva del punteggio.
+    # ========================================================
+
+    score = (
+        p1 * 1000
+        + p3 * 450
+        + p5 * 180
+        + p9 * 60
+    )
+
+    media_colpo = (
+        sum(ritardi_ambo) / len(ritardi_ambo)
+        if ritardi_ambo
+        else None
+    )
+
+    return {
+        "score": round(score, 4),
+        "cicli": cicli,
+
+        "ambi_1_colpo": ambo_1,
+        "ambi_entro_3": ambo_3,
+        "ambi_entro_5": ambo_5,
+        "ambi_entro_9": ambo_9,
+
+        "percentuale_1_colpo": round(
+            p1 * 100,
+            2
+        ),
+        "percentuale_entro_3": round(
+            p3 * 100,
+            2
+        ),
+        "percentuale_entro_5": round(
+            p5 * 100,
+            2
+        ),
+        "percentuale_entro_9": round(
+            p9 * 100,
+            2
+        ),
+
+        "media_colpo_ambo": (
+            round(media_colpo, 2)
+            if media_colpo is not None
+            else None
+        ),
+
+        "ritardi_ambo": ritardi_ambo
+    }
+
+
+# ============================================================
+# PRECEDENTE
+# ============================================================
+
+def leggi_precedente():
+    path = "risultati_v4.json"
+
+    if not os.path.exists(path):
+        return None
+
     try:
-        with open("risultati_v4.json",encoding="utf-8") as f:d=json.load(f)
-        m=d.get("motore",{})
-        o=str(m.get("ruota_origine","")).upper()
-        t=str(m.get("ruota_target","")).upper()
-        return (o,t) if o and t else None
-    except Exception:return None
+        with open(
+            path,
+            "r",
+            encoding="utf-8"
+        ) as f:
+            dati = json.load(f)
 
-def seleziona(a):
-    ruote=[r for r in RUOTE if r in a and len(a[r])>CICLO_MAX+2]
-    cand=[]
-    for o in ruote:
-        for t in ruote:
-            if o==t:continue
-            lo,lt=a[o],a[t]
-            n=comune(lo,lt)
-            if n<=CICLO_MAX+2:continue
-            fine=n-1
-            rec=max(0,fine-FINESTRA_RECENTE)
+        motore = dati.get(
+            "motore",
+            {}
+        )
+
+        origine = str(
+            motore.get(
+                "ruota_origine",
+                ""
+            )
+        ).upper()
+
+        target = str(
+            motore.get(
+                "ruota_target",
+                ""
+            )
+        ).upper()
+
+        if origine and target:
+            return origine, target
+
+    except Exception:
+        pass
+
+    return None
+
+
+# ============================================================
+# SELEZIONE V11
+# ============================================================
+
+def seleziona_configurazione(
+    archivio_pulito
+):
+    ruote = [
+        r for r in RUOTE
+        if (
+            r in archivio_pulito
+            and len(
+                archivio_pulito[r]
+            ) > CICLO_MAX + 2
+        )
+    ]
+
+    candidati = []
+
+    for origine_ruota in ruote:
+
+        lista_origine = (
+            archivio_pulito[
+                origine_ruota
+            ]
+        )
+
+        for target_ruota in ruote:
+
+            if target_ruota == origine_ruota:
+                continue
+
+            lista_target = (
+                archivio_pulito[
+                    target_ruota
+                ]
+            )
+
+            totale_comune = (
+                lunghezza_comune(
+                    lista_origine,
+                    lista_target
+                )
+            )
+
+            if totale_comune <= CICLO_MAX + 2:
+                continue
+
+            posizione_fine = (
+                totale_comune - 1
+            )
+
+            posizione_recente = max(
+                0,
+                posizione_fine
+                - FINESTRA_RECENTE
+            )
+
             for shift in SHIFT_CANDIDATI:
-                st=valuta(lo,lt,shift,fine,0)
-                rr=valuta(lo,lt,shift,fine,rec)
-                if st is None or rr is None:continue
-                delta=rr["percentuale_ambo"]-st["percentuale_ambo"]
-                bonus=max(-2.0,min(2.0,delta*0.10))
-                score=st["score"]*PESO_STORICO+rr["score"]*PESO_RECENTE+bonus
-                cand.append({"origine":o,"target":t,"shift":shift,"score":score,
-                             "score_storico":st["score"],"score_recente":rr["score"],
-                             "bonus_consistenza":bonus,"storico":st,"recente":rr,
-                             "estrazioni_comuni":n})
-    cand.sort(key=lambda x:(x["score"],x["recente"]["ambi"],x["storico"]["ambi"],
-                            x["recente"]["vittorie_rapide"],x["recente"]["ambate"]),reverse=True)
-    if not cand:return None,[]
-    old=precedente(); best=cand[0]
-    if old and len(cand)>1 and (best["origine"],best["target"])==old:
-        if best["score"]-cand[1]["score"]<0.20:best=cand[1]
-    return best,cand[:10]
 
-def costruisci_risultati(archivio,a,best,top,check):
-    o,t,shift=best["origine"],best["target"],best["shift"]
-    lo,lt=a[o],a[t]
-    uo,ut=ultima_estrazione(lo),ultima_estrazione(lt)
-    if not uo or not ut:raise ValueError("Ultima estrazione non valida.")
-    origine=uo[0]; amb,sec=costruisci_ambo(origine,shift)
-    if sec is None:raise ValueError("Ambo non valido.")
-    data=datetime.now().strftime("%d/%m/%Y")
-    if isinstance(archivio.get("info_concorso"),dict):data=archivio["info_concorso"].get("data",data)
-    elif isinstance(archivio.get("data"),str):data=archivio["data"]
-    topout=[]
-    for p,c in enumerate(top,1):
-        topout.append({"posizione":p,"origine":c["origine"],"target":c["target"],"shift":c["shift"],
-                       "score":round(c["score"],4),"score_storico":round(c["score_storico"],4),
-                       "score_recente":round(c["score_recente"],4),"bonus_consistenza":round(c["bonus_consistenza"],4),
-                       "ambi":c["storico"]["ambi"],"ambate":c["storico"]["ambate"],
-                       "percentuale_ambo":round(c["storico"]["percentuale_ambo"],2),
-                       "percentuale_ambo_recente":round(c["recente"]["percentuale_ambo"],2),
-                       "estrazioni_comuni":c["estrazioni_comuni"]})
-    pbase=lambda nums:{"numeri_estrazione":nums,
-                       "tipo_calcolo":f"Isotopia V10.1: {o} 1° numero ({origine}) + {shift} = {amb}; diametrale = {sec}",
-                       "ambata":amb,"ambo":[amb,sec],
-                       "ambetti":[[amb,fuori_90(sec+1)],[amb,fuori_90(sec-1)]]}
-    res={"info_concorso":{"numero":"Lotto Intelligence V10.1","data":data},
-         "motore":{"versione":"V10.1 - Isotopia adattiva dinamica","ruota_origine":o,"ruota_target":t,
-                   "trasformazione":"DIAMETRALE","shift":shift,
-                   "score_backtest":round(best["score"],4),"score_storico":round(best["score_storico"],4),
-                   "score_recente":round(best["score_recente"],4),"finestra_recente":FINESTRA_RECENTE,
-                   "peso_storico":PESO_STORICO,"peso_recente":PESO_RECENTE,
-                   "cicli_testati":best["storico"]["cicli"],"ambi_backtest":best["storico"]["ambi"],
-                   "ambate_backtest":best["storico"]["ambate"],"vittorie_rapide_1_3":best["storico"]["vittorie_rapide"],
-                   "percentuale_ambo":round(best["storico"]["percentuale_ambo"],2),
-                   "percentuale_ambata":round(best["storico"]["percentuale_ambata"],2),
-                   "percentuale_rapida":round(best["storico"]["percentuale_rapida"],2),
-                   "ambi_recenti":best["recente"]["ambi"],"ambate_recenti":best["recente"]["ambate"],
-                   "percentuale_ambo_recente":round(best["recente"]["percentuale_ambo"],2),
-                   "percentuale_ambata_recente":round(best["recente"]["percentuale_ambata"],2),
-                   "estrazioni_comuni_coppia":best["estrazioni_comuni"],
-                   "controllo_allineamento":check,"top10_configurazioni":topout},
-         "previsioni":{o:pbase(uo),t:pbase(ut)},"storico_verificato":[]}
-    n=comune(lo,lt); last=n-1
-    for dist in range(1,min(10,last)+1):
-        pos=last-dist; e=nums_comuni(lo,pos,n)
-        if not e:continue
-        ap,sp=costruisci_ambo(e[0],shift)
-        stato="In gioco"; cv=None
-        for c in range(1,CICLO_MAX+1):
-            pp=pos+c
-            if pp>=n:break
-            xa=nums_comuni(lo,pp,n); xb=nums_comuni(lt,pp,n)
-            if (ap in xa and sp in xa) or (ap in xb and sp in xb):
-                stato="AMBO SECCO VINCENTE!";cv=c;break
-            if ap in xa or ap in xb:
-                if stato=="In gioco":stato="Ambata Vincente";cv=c
-        if stato=="In gioco" and dist>CICLO_MAX:stato="Ciclo concluso (No esito)"
-        res["storico_verificato"].append({"data":f"Concorso Arretrat. -{dist}",
-                                          "ambata":ap,"ambo":f"{ap} - {sp}",
-                                          "colpi":f"Esito al {cv}° colpo" if cv else f"{dist}° Colpo",
-                                          "stato":stato})
-    return res
+                storico = (
+                    valuta_configurazione(
+                        lista_origine,
+                        lista_target,
+                        shift,
+                        posizione_fine,
+                        0
+                    )
+                )
 
-def elabora_motore_v10():
-    if not os.path.exists("estrazioni.json"):
-        print("ERRORE: estrazioni.json non trovato.");return
-    with open("estrazioni.json",encoding="utf-8") as f:archivio=json.load(f)
-    a=prepara_ruote(archivio)
-    ruote=[r for r in RUOTE if r in a and len(a[r])>CICLO_MAX+2]
-    if len(ruote)<2:
-        print("ERRORE: almeno due ruote con storico sufficiente.");return
-    check=controlla(a,ruote)
-    best,top=seleziona(a)
-    if best is None:
-        print("ERRORE: nessuna configurazione valida trovata.");return
-    res=costruisci_risultati(archivio,a,best,top,check)
-    with open("risultati_v4.json","w",encoding="utf-8") as f:json.dump(res,f,indent=4,ensure_ascii=False)
-    m=res["motore"];p=res["previsioni"];o=m["ruota_origine"];t=m["ruota_target"];am=p[o]["ambo"]
-    print("==============================================")
-    print("LOTTO INTELLIGENCE V10.1")
-    print("==============================================")
-    print(f"Ruota origine : {o}")
-    print(f"Ruota target  : {t}")
-    print(f"Shift         : +{m['shift']}")
-    print(f"Ambata        : {p[o]['ambata']}")
-    print(f"Ambo secco    : {am[0]} - {am[1]}")
-    print("----------------------------------------------")
-    print(f"Ultima {o}: {p[o]['numeri_estrazione']}")
-    print(f"Ultima {t}: {p[t]['numeri_estrazione']}")
-    print("----------------------------------------------")
-    print(f"Score finale  : {m['score_backtest']}")
-    print(f"Score storico : {m['score_storico']}")
-    print(f"Score recente : {m['score_recente']}")
-    print(f"Cicli         : {m['cicli_testati']}")
-    print(f"Ambi storici  : {m['ambi_backtest']}")
-    print(f"Ambate storiche: {m['ambate_backtest']}")
-    print(f"% Ambo        : {m['percentuale_ambo']}%")
-    print(f"% Ambo recente: {m['percentuale_ambo_recente']}%")
-    print("----------------------------------------------")
-    print("CONTROLLO ALLINEAMENTO")
-    print(f"Min estrazioni: {check['lunghezza_minima']}")
-    print(f"Max estrazioni: {check['lunghezza_massima']}")
-    print(f"Differenza    : {check['differenza']}")
-    print("----------------------------------------------")
-    print("TOP 3 CONFIGURAZIONI")
-    for x in m["top10_configurazioni"][:3]:
-        print(f"{x['posizione']}. {x['origine']} -> {x['target']} +{x['shift']} | score {x['score']}")
-    print("==============================================")
+                recente = (
+                    valuta_configurazione(
+                        lista_origine,
+                        lista_target,
+                        shift,
+                        posizione_fine,
+                        posizione_recente
+                    )
+                )
 
-if __name__=="__main__":elabora_motore_v10()
+                if (
+                    storico is None
+                    or recente is None
+                ):
+                    continue
+
+                score_finale = (
+                    storico["score"]
+                    * PESO_STORICO
+                    +
+                    recente["score"]
+                    * PESO_RECENTE
+                )
+
+                # Bonus leggero se la parte recente è migliore
+                # dello storico proprio sugli ambi al 1° colpo.
+                differenza_rapida = (
+                    recente[
+                        "percentuale_1_colpo"
+                    ]
+                    -
+                    storico[
+                        "percentuale_1_colpo"
+                    ]
+                )
+
+                bonus_recente = max(
+                    -5.0,
+                    min(
+                        5.0,
+                        differenza_rapida * 0.25
+                    )
+                )
+
+                score_finale += (
+                    bonus_recente
+                )
+
+                candidati.append({
+                    "origine": origine_ruota,
+                    "target": target_ruota,
+                    "shift": shift,
+
+                    "score": score_finale,
+
+                    "score_storico":
+                        storico["score"],
+
+                    "score_recente":
+                        recente["score"],
+
+                    "bonus_recente":
+                        bonus_recente,
+
+                    "storico":
+                        storico,
+
+                    "recente":
+                        recente,
+
+                    "estrazioni_comuni":
+                        totale_comune
+                })
+
+    candidati.sort(
+        key=lambda x: (
+            x["score"],
+
+            x["recente"][
+                "ambi_1_colpo"
+            ],
+
+            x["storico"][
+                "ambi_1_colpo"
+            ],
+
+            x["recente"][
+                "ambi_entro_3"
+            ],
+
+            x["storico"][
+                "ambi_entro_3"
+            ]
+        ),
+        reverse=True
+    )
+
+    if not candidati:
+        return None, []
+
+    # ========================================================
+    # NON FORZIAMO IL CAMBIO DI RUOTE.
+    #
+    # Se la stessa coppia rimane prima perché ha realmente
+    # il miglior score ambo-secco, può rimanere.
+    #
+    # V11 non deve cambiare ruote artificialmente.
+    # ========================================================
+
+    migliore = candidati[0]
+
+    return migliore, candidati[:10]
+
+
+# ============================================================
+# COSTRUZIONE OUTPUT
+# ============================================================
+
+def costruisci_risultati(
+    archivio,
+    archivio_pulito,
+    migliore,
+    top10,
+    controllo
+):
+    origine_ruota = (
+        migliore["origine"]
+    )
+
+    target_ruota = (
+        migliore["target"]
+    )
+
+    shift = (
+        migliore["shift"]
+    )
+
+    lista_origine = (
+        archivio_pulito[
+            origine_ruota
+        ]
+    )
+
+    lista_target = (
+        archivio_pulito[
+            target_ruota
+        ]
+    )
+
+    # ========================================================
+    # ULTIMA ESTRAZIONE REALE
+    # ========================================================
+
+    ultima_origine = (
+        ultima_estrazione(
+            lista_origine
+        )
+    )
+
+    ultima_target = (
+        ultima_estrazione(
+            lista_target
+        )
+    )
+
+    if not ultima_origine:
+        raise ValueError(
+            "Ultima estrazione origine non valida."
+        )
+
+    if not ultima_target:
+        raise ValueError(
+            "Ultima estrazione target non valida."
+        )
+
+    numero_base = (
+        ultima_origine[0]
+    )
+
+    ambata, secondo = (
+        costruisci_ambo(
+            numero_base,
+            shift
+        )
+    )
+
+    if secondo is None:
+        raise ValueError(
+            "Ambo non valido."
+        )
+
+    # ========================================================
+    # DATA
+    # ========================================================
+
+    data_reale = (
+        datetime.now().strftime(
+            "%d/%m/%Y"
+        )
+    )
+
+    if isinstance(
+        archivio.get(
+            "info_concorso"
+        ),
+        dict
+    ):
+        data_reale = (
+            archivio[
+                "info_concorso"
+            ].get(
+                "data",
+                data_reale
+            )
+        )
+
+    elif isinstance(
+        archivio.get("data"),
+        str
+    ):
+        data_reale = (
+            archivio["data"]
+        )
+
+    # ========================================================
+    # TOP 10
+    # ========================================================
+
+    top_output = []
+
+    for posizione, candidato in enumerate(
+        top10,
+        start=1
+    ):
+        storico = candidato[
+            "storico"
+        ]
+
+        recente = candidato[
+            "recente"
+        ]
+
+        top_output.append({
+            "posizione":
+                posizione,
+
+            "origine":
+                candidato["origine"],
+
+            "target":
+                candidato["target"],
+
+            "shift":
+                candidato["shift"],
+
+            "score":
+                round(
+                    candidato["score"],
+                    4
+                ),
+
+            "score_storico":
+                round(
+                    candidato[
+                        "score_storico"
+                    ],
+                    4
+                ),
+
+            "score_recente":
+                round(
+                    candidato[
+                        "score_recente"
+                    ],
+                    4
+                ),
+
+            "bonus_recente":
+                round(
+                    candidato[
+                        "bonus_recente"
+                    ],
+                    4
+                ),
+
+            "ambi_1_colpo":
+                storico[
+                    "ambi_1_colpo"
+                ],
+
+            "ambi_entro_3":
+                storico[
+                    "ambi_entro_3"
+                ],
+
+            "ambi_entro_5":
+                storico[
+                    "ambi_entro_5"
+                ],
+
+            "ambi_entro_9":
+                storico[
+                    "ambi_entro_9"
+                ],
+
+            "percentuale_1_colpo":
+                storico[
+                    "percentuale_1_colpo"
+                ],
+
+            "percentuale_entro_3":
+                storico[
+                    "percentuale_entro_3"
+                ],
+
+            "percentuale_entro_9":
+                storico[
+                    "percentuale_entro_9"
+                ],
+
+            "ambi_1_colpo_recenti":
+                recente[
+                    "ambi_1_colpo"
+                ],
+
+            "ambi_entro_3_recenti":
+                recente[
+                    "ambi_entro_3"
+                ],
+
+            "percentuale_1_colpo_recente":
+                recente[
+                    "percentuale_1_colpo"
+                ],
+
+            "percentuale_entro_3_recente":
+                recente[
+                    "percentuale_entro_3"
+                ],
+
+            "estrazioni_comuni":
+                candidato[
+                    "estrazioni_comuni"
+                ]
+        })
+
+    # ========================================================
+    # RISULTATO
+    # ========================================================
+
+    risultati = {
+        "info_concorso": {
+            "numero":
+                "Lotto Intelligence V11",
+            "data":
+                data_reale
+        },
+
+        "motore": {
+            "versione":
+                "V11 - Isotopia ambo secco",
+
+            "ruota_origine":
+                origine_ruota,
+
+            "ruota_target":
+                target_ruota,
+
+            "trasformazione":
+                "DIAMETRALE",
+
+            "shift":
+                shift,
+
+            "score_backtest":
+                round(
+                    migliore[
+                        "score"
+                    ],
+                    4
+                ),
+
+            "score_storico":
+                round(
+                    migliore[
+                        "score_storico"
+                    ],
+                    4
+                ),
+
+            "score_recente":
+                round(
+                    migliore[
+                        "score_recente"
+                    ],
+                    4
+                ),
+
+            "finestra_recente":
+                FINESTRA_RECENTE,
+
+            "peso_storico":
+                PESO_STORICO,
+
+            "peso_recente":
+                PESO_RECENTE,
+
+            "cicli_testati":
+                migliore[
+                    "storico"
+                ]["cicli"],
+
+            # SOLO AMBI SECCO
+            "ambi_1_colpo":
+                migliore[
+                    "storico"
+                ]["ambi_1_colpo"],
+
+            "ambi_entro_3":
+                migliore[
+                    "storico"
+                ]["ambi_entro_3"],
+
+            "ambi_entro_5":
+                migliore[
+                    "storico"
+                ]["ambi_entro_5"],
+
+            "ambi_entro_9":
+                migliore[
+                    "storico"
+                ]["ambi_entro_9"],
+
+            "percentuale_1_colpo":
+                migliore[
+                    "storico"
+                ]["percentuale_1_colpo"],
+
+            "percentuale_entro_3":
+                migliore[
+                    "storico"
+                ]["percentuale_entro_3"],
+
+            "percentuale_entro_5":
+                migliore[
+                    "storico"
+                ]["percentuale_entro_5"],
+
+            "percentuale_entro_9":
+                migliore[
+                    "storico"
+                ]["percentuale_entro_9"],
+
+            "ambi_1_colpo_recenti":
+                migliore[
+                    "recente"
+                ]["ambi_1_colpo"],
+
+            "ambi_entro_3_recenti":
+                migliore[
+                    "recente"
+                ]["ambi_entro_3"],
+
+            "percentuale_1_colpo_recente":
+                migliore[
+                    "recente"
+                ]["percentuale_1_colpo"],
+
+            "percentuale_entro_3_recente":
+                migliore[
+                    "recente"
+                ]["percentuale_entro_3"],
+
+            "media_colpo_ambo":
+                migliore[
+                    "storico"
+                ]["media_colpo_ambo"],
+
+            "estrazioni_comuni_coppia":
+                migliore[
+                    "estrazioni_comuni"
+                ],
+
+            "controllo_allineamento":
+                controllo,
+
+            "top10_configurazioni":
+                top_output
+        },
+
+        "previsioni": {},
+
+        "storico_verificato": []
+    }
+
+    # ========================================================
+    # PREVISIONE CORRENTE
+    # ========================================================
+
+    def blocco_previsione(
+        numeri
+    ):
+        return {
+            "numeri_estrazione":
+                numeri,
+
+            "tipo_calcolo": (
+                f"Isotopia V11: "
+                f"{origine_ruota} 1° numero "
+                f"({numero_base}) + "
+                f"{shift} = {ambata}; "
+                f"diametrale = {secondo}"
+            ),
+
+            "ambata":
+                ambata,
+
+            "ambo":
+                [ambata, secondo],
+
+            "ambetti": [
+                [
+                    ambata,
+                    fuori_90(
+                        secondo + 1
+                    )
+                ],
+                [
+                    ambata,
+                    fuori_90(
+                        secondo - 1
+                    )
+                ]
+            ]
+        }
+
+    risultati[
+        "previsioni"
+    ][origine_ruota] = (
+        blocco_previsione(
+            ultima_origine
+        )
+    )
+
+    risultati[
+        "previsioni"
+    ][target_ruota] = (
+        blocco_previsione(
+            ultima_target
+        )
+    )
+
+    # ========================================================
+    # ARCHIVIO STORICO
+    #
+    # Qui la distinzione è netta:
+    # - AMBO SECCO VINCENTE
+    # - Ambata Vincente
+    # - In gioco
+    # - Ciclo concluso
+    # ========================================================
+
+    totale_comune = (
+        lunghezza_comune(
+            lista_origine,
+            lista_target
+        )
+    )
+
+    ultima_posizione = (
+        totale_comune - 1
+    )
+
+    for distanza in range(
+        1,
+        min(
+            10,
+            ultima_posizione
+        ) + 1
+    ):
+        posizione = (
+            ultima_posizione
+            - distanza
+        )
+
+        estrazione = (
+            numeri_coda_comune(
+                lista_origine,
+                posizione,
+                totale_comune
+            )
+        )
+
+        if not estrazione:
+            continue
+
+        numero_storico = (
+            estrazione[0]
+        )
+
+        ambata_storica, secondo_storico = (
+            costruisci_ambo(
+                numero_storico,
+                shift
+            )
+        )
+
+        if secondo_storico is None:
+            continue
+
+        stato = "In gioco"
+        colpo = None
+        tipo = None
+
+        for c in range(
+            1,
+            CICLO_MAX + 1
+        ):
+            p = (
+                posizione + c
+            )
+
+            if p >= totale_comune:
+                break
+
+            nums_o = (
+                numeri_coda_comune(
+                    lista_origine,
+                    p,
+                    totale_comune
+                )
+            )
+
+            nums_t = (
+                numeri_coda_comune(
+                    lista_target,
+                    p,
+                    totale_comune
+                )
+            )
+
+            if (
+                ambo_secco_su_ruota(
+                    nums_o,
+                    ambata_storica,
+                    secondo_storico
+                )
+                or
+                ambo_secco_su_ruota(
+                    nums_t,
+                    ambata_storica,
+                    secondo_storico
+                )
+            ):
+                stato = (
+                    "AMBO SECCO VINCENTE!"
+                )
+                colpo = c
+                tipo = "ambo_secco"
+                break
+
+            if (
+                ambata_storica in nums_o
+                or
+                ambata_storica in nums_t
+            ):
+                if (
+                    stato == "In gioco"
+                ):
+                    stato = (
+                        "Ambata Vincente"
+                    )
+                    colpo = c
+                    tipo = "ambata"
+
+        if (
+            stato == "In gioco"
+            and distanza > CICLO_MAX
+        ):
+            stato = (
+                "Ciclo concluso "
+                "(No esito)"
+            )
+
+        risultati[
+            "storico_verificato"
+        ].append({
+            "data":
+                f"Concorso Arretrat. -{distanza}",
+
+            "ambata":
+                ambata_storica,
+
+            "ambo":
+                f"{ambata_storica} - "
+                f"{secondo_storico}",
+
+            "colpo":
+                colpo,
+
+            "tipo_esito":
+                tipo,
+
+            "stato":
+                stato
+        })
+
+    return risultati
+
+
+# ============================================================
+# MAIN
+# ============================================================
+
+def elabora_motore_v11():
+
+    if not os.path.exists(
+        "estrazioni.json"
+    ):
+        print(
+            "ERRORE: "
+            "estrazioni.json non trovato."
+        )
+        return
+
+    with open(
+        "estrazioni.json",
+        "r",
+        encoding="utf-8"
+    ) as f:
+        archivio = json.load(f)
+
+    archivio_pulito = (
+        prepara_ruote(
+            archivio
+        )
+    )
+
+    ruote_valide = [
+        r for r in RUOTE
+        if (
+            r in archivio_pulito
+            and len(
+                archivio_pulito[r]
+            ) > CICLO_MAX + 2
+        )
+    ]
+
+    if len(ruote_valide) < 2:
+        print(
+            "ERRORE: servono almeno "
+            "due ruote valide."
+        )
+        return
+
+    controllo = (
+        controllo_allineamento(
+            archivio_pulito,
+            ruote_valide
+        )
+    )
+
+    migliore, top10 = (
+        seleziona_configurazione(
+            archivio_pulito
+        )
+    )
+
+    if migliore is None:
+        print(
+            "ERRORE: nessuna "
+            "configurazione valida."
+        )
+        return
+
+    risultati = (
+        costruisci_risultati(
+            archivio,
+            archivio_pulito,
+            migliore,
+            top10,
+            controllo
+        )
+    )
+
+    with open(
+        "risultati_v4.json",
+        "w",
+        encoding="utf-8"
+    ) as f:
+        json.dump(
+            risultati,
+            f,
+            indent=4,
+            ensure_ascii=False
+        )
+
+    motore = risultati[
+        "motore"
+    ]
+
+    origine = motore[
+        "ruota_origine"
+    ]
+
+    target = motore[
+        "ruota_target"
+    ]
+
+    ambo = risultati[
+        "previsioni"
+    ][origine]["ambo"]
+
+    print(
+        "=============================================="
+    )
+    print(
+        "LOTTO INTELLIGENCE V11"
+    )
+    print(
+        "ISOTOPIA - AMBO SECCO"
+    )
+    print(
+        "=============================================="
+    )
+
+    print(
+        f"Ruote        : "
+        f"{origine} -> {target}"
+    )
+
+    print(
+        f"Shift        : "
+        f"+{motore['shift']}"
+    )
+
+    print(
+        f"Ambata       : "
+        f"{risultati['previsioni'][origine]['ambata']}"
+    )
+
+    print(
+        f"AMBO SECCO   : "
+        f"{ambo[0]} - {ambo[1]}"
+    )
+
+    print(
+        "----------------------------------------------"
+    )
+
+    print(
+        f"Cicli        : "
+        f"{motore['cicli_testati']}"
+    )
+
+    print(
+        f"Ambo 1°      : "
+        f"{motore['ambi_1_colpo']} "
+        f"({motore['percentuale_1_colpo']}%)"
+    )
+
+    print(
+        f"Ambo <=3     : "
+        f"{motore['ambi_entro_3']} "
+        f"({motore['percentuale_entro_3']}%)"
+    )
+
+    print(
+        f"Ambo <=5     : "
+        f"{motore['ambi_entro_5']} "
+        f"({motore['percentuale_entro_5']}%)"
+    )
+
+    print(
+        f"Ambo <=9     : "
+        f"{motore['ambi_entro_9']} "
+        f"({motore['percentuale_entro_9']}%)"
+    )
+
+    print(
+        "----------------------------------------------"
+    )
+
+    print(
+        f"Score        : "
+        f"{motore['score_backtest']}"
+    )
+
+    print(
+        f"Score storico: "
+        f"{motore['score_storico']}"
+    )
+
+    print(
+        f"Score recente: "
+        f"{motore['score_recente']}"
+    )
+
+    print(
+        "----------------------------------------------"
+    )
+
+    print(
+        "CONTROLLO ALLINEAMENTO"
+    )
+
+    print(
+        f"Min estrazioni: "
+        f"{controllo['lunghezza_minima']}"
+    )
+
+    print(
+        f"Max estrazioni: "
+        f"{controllo['lunghezza_massima']}"
+    )
+
+    print(
+        f"Differenza    : "
+        f"{controllo['differenza']}"
+    )
+
+    print(
+        "----------------------------------------------"
+    )
+
+    print(
+        "TOP 3 AMBO SECCO"
+    )
+
+    for candidato in motore[
+        "top10_configurazioni"
+    ][:3]:
+        print(
+            f"{candidato['posizione']}. "
+            f"{candidato['origine']} -> "
+            f"{candidato['target']} "
+            f"+{candidato['shift']} | "
+            f"score {candidato['score']} | "
+            f"1° colpo "
+            f"{candidato['ambi_1_colpo']}"
+        )
+
+    print(
+        "=============================================="
+    )
+
+
+if __name__ == "__main__":
+    elabora_motore_v11()
