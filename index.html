@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Intelligence V10</title>
+    <title>Lotto Intelligence V11</title>
     <style>
         :root {
             --primary:#1e3a8a;
@@ -168,7 +168,7 @@
 <body>
 <div class="container">
     <header>
-        <h1 id="titolo">Lotto Intelligence V10</h1>
+        <h1 id="titolo">Lotto Intelligence V11</h1>
         <p id="info-data" class="info-concorso">Caricamento...</p>
     </header>
 
@@ -190,7 +190,7 @@ async function caricaRisultati() {
 
         const motore = data.motore || {};
         const versione = motore.versione || data.info_concorso?.numero || 'Lotto Intelligence V10';
-        document.getElementById('titolo').innerText = 'Lotto Intelligence V10';
+        document.getElementById('titolo').innerText = 'Lotto Intelligence V11';
         document.getElementById('info-data').innerText =
             `Estrazione del: ${data.info_concorso?.data || 'N.D.'}`;
 
