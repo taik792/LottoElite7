@@ -9,13 +9,13 @@
         "ruota_target": "MILANO",
         "trasformazione": "DIAMETRALE",
         "shift": 5,
-        "score_backtest": 32.1095,
-        "score_storico": 22.8033,
+        "score_backtest": 32.1069,
+        "score_storico": 22.7975,
         "score_recente": 39.2555,
         "finestra_recente": 600,
         "peso_storico": 0.45,
         "peso_recente": 0.55,
-        "cicli_testati": 3924,
+        "cicli_testati": 3925,
         "ambi_1_colpo": 26,
         "ambi_entro_3": 70,
         "ambi_entro_5": 112,
@@ -29,23 +29,23 @@
         "percentuale_1_colpo_recente": 1.69,
         "percentuale_entro_3_recente": 2.71,
         "media_colpo_ambo": 4.87,
-        "estrazioni_comuni_coppia": 3934,
+        "estrazioni_comuni_coppia": 3935,
         "controllo_allineamento": {
             "allineamento_ok": true,
-            "lunghezza_minima": 3934,
-            "lunghezza_massima": 3934,
+            "lunghezza_minima": 3935,
+            "lunghezza_massima": 3935,
             "differenza": 0,
             "lunghezze_ruote": {
-                "BARI": 3934,
-                "CAGLIARI": 3934,
-                "FIRENZE": 3934,
-                "GENOVA": 3934,
-                "MILANO": 3934,
-                "NAPOLI": 3934,
-                "PALERMO": 3934,
-                "ROMA": 3934,
-                "TORINO": 3934,
-                "VENEZIA": 3934
+                "BARI": 3935,
+                "CAGLIARI": 3935,
+                "FIRENZE": 3935,
+                "GENOVA": 3935,
+                "MILANO": 3935,
+                "NAPOLI": 3935,
+                "PALERMO": 3935,
+                "ROMA": 3935,
+                "TORINO": 3935,
+                "VENEZIA": 3935
             }
         },
         "top10_configurazioni": [
@@ -54,8 +54,8 @@
                 "origine": "BARI",
                 "target": "MILANO",
                 "shift": 5,
-                "score": 32.1095,
-                "score_storico": 22.8033,
+                "score": 32.1069,
+                "score_storico": 22.7975,
                 "score_recente": 39.2555,
                 "bonus_recente": 0.2575,
                 "ambi_1_colpo": 26,
@@ -69,15 +69,15 @@
                 "ambi_entro_3_recenti": 16,
                 "percentuale_1_colpo_recente": 1.69,
                 "percentuale_entro_3_recente": 2.71,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 2,
                 "origine": "GENOVA",
                 "target": "TORINO",
                 "shift": 16,
-                "score": 31.7111,
-                "score_storico": 22.5714,
+                "score": 31.7085,
+                "score_storico": 22.5656,
                 "score_recente": 38.8663,
                 "bonus_recente": 0.1775,
                 "ambi_1_colpo": 25,
@@ -91,15 +91,15 @@
                 "ambi_entro_3_recenti": 17,
                 "percentuale_1_colpo_recente": 1.35,
                 "percentuale_entro_3_recente": 2.88,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 3,
                 "origine": "BARI",
                 "target": "ROMA",
                 "shift": 5,
-                "score": 31.5372,
-                "score_storico": 21.9368,
+                "score": 31.5347,
+                "score_storico": 21.9312,
                 "score_recente": 39.0694,
                 "bonus_recente": 0.1775,
                 "ambi_1_colpo": 25,
@@ -113,15 +113,15 @@
                 "ambi_entro_3_recenti": 17,
                 "percentuale_1_colpo_recente": 1.35,
                 "percentuale_entro_3_recente": 2.88,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 4,
                 "origine": "VENEZIA",
                 "target": "BARI",
                 "shift": 20,
-                "score": 31.5349,
-                "score_storico": 23.9424,
+                "score": 31.5322,
+                "score_storico": 23.9363,
                 "score_recente": 37.4788,
                 "bonus_recente": 0.1475,
                 "ambi_1_colpo": 23,
@@ -135,15 +135,15 @@
                 "ambi_entro_3_recenti": 19,
                 "percentuale_1_colpo_recente": 1.18,
                 "percentuale_entro_3_recente": 3.21,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 5,
                 "origine": "VENEZIA",
                 "target": "CAGLIARI",
                 "shift": 33,
-                "score": 31.367,
-                "score_storico": 23.9551,
+                "score": 31.3643,
+                "score_storico": 23.949,
                 "score_recente": 37.1404,
                 "bonus_recente": 0.16,
                 "ambi_1_colpo": 28,
@@ -157,15 +157,15 @@
                 "ambi_entro_3_recenti": 17,
                 "percentuale_1_colpo_recente": 1.35,
                 "percentuale_entro_3_recente": 2.88,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 6,
                 "origine": "BARI",
                 "target": "TORINO",
                 "shift": 13,
-                "score": 31.3297,
-                "score_storico": 20.4918,
+                "score": 31.3273,
+                "score_storico": 20.4866,
                 "score_recente": 39.797,
                 "bonus_recente": 0.22,
                 "ambi_1_colpo": 25,
@@ -179,15 +179,15 @@
                 "ambi_entro_3_recenti": 16,
                 "percentuale_1_colpo_recente": 1.52,
                 "percentuale_entro_3_recente": 2.71,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 7,
                 "origine": "VENEZIA",
                 "target": "PALERMO",
                 "shift": 41,
-                "score": 31.3027,
-                "score_storico": 23.7946,
+                "score": 31.3,
+                "score_storico": 23.7885,
                 "score_recente": 37.1912,
                 "bonus_recente": 0.14,
                 "ambi_1_colpo": 31,
@@ -201,15 +201,15 @@
                 "ambi_entro_3_recenti": 18,
                 "percentuale_1_colpo_recente": 1.35,
                 "percentuale_entro_3_recente": 3.05,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 8,
                 "origine": "GENOVA",
                 "target": "BARI",
                 "shift": 29,
-                "score": 31.2821,
-                "score_storico": 24.1896,
+                "score": 31.2793,
+                "score_storico": 24.1834,
                 "score_recente": 36.7851,
                 "bonus_recente": 0.165,
                 "ambi_1_colpo": 27,
@@ -223,15 +223,15 @@
                 "ambi_entro_3_recenti": 16,
                 "percentuale_1_colpo_recente": 1.35,
                 "percentuale_entro_3_recente": 2.71,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 9,
                 "origine": "VENEZIA",
                 "target": "TORINO",
                 "shift": 25,
-                "score": 31.0494,
-                "score_storico": 21.8731,
+                "score": 31.0468,
+                "score_storico": 21.8675,
                 "score_recente": 38.2572,
                 "bonus_recente": 0.165,
                 "ambi_1_colpo": 27,
@@ -245,15 +245,15 @@
                 "ambi_entro_3_recenti": 17,
                 "percentuale_1_colpo_recente": 1.35,
                 "percentuale_entro_3_recente": 2.88,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             },
             {
                 "posizione": 10,
                 "origine": "MILANO",
                 "target": "PALERMO",
                 "shift": 25,
-                "score": 30.9839,
-                "score_storico": 21.6743,
+                "score": 30.9815,
+                "score_storico": 21.6688,
                 "score_recente": 38.3418,
                 "bonus_recente": 0.1425,
                 "ambi_1_colpo": 24,
@@ -267,58 +267,58 @@
                 "ambi_entro_3_recenti": 20,
                 "percentuale_1_colpo_recente": 1.18,
                 "percentuale_entro_3_recente": 3.38,
-                "estrazioni_comuni": 3934
+                "estrazioni_comuni": 3935
             }
         ]
     },
     "previsioni": {
         "BARI": {
             "numeri_estrazione": [
-                15,
-                76,
-                24,
-                54,
-                46
+                29,
+                61,
+                70,
+                47,
+                10
             ],
-            "tipo_calcolo": "Isotopia V11: BARI 1° numero (15) + 5 = 20; diametrale = 65",
-            "ambata": 20,
+            "tipo_calcolo": "Isotopia V11: BARI 1° numero (29) + 5 = 34; diametrale = 79",
+            "ambata": 34,
             "ambo": [
-                20,
-                65
+                34,
+                79
             ],
             "ambetti": [
                 [
-                    20,
-                    66
+                    34,
+                    80
                 ],
                 [
-                    20,
-                    64
+                    34,
+                    78
                 ]
             ]
         },
         "MILANO": {
             "numeri_estrazione": [
-                39,
-                62,
-                24,
-                78,
-                19
+                63,
+                31,
+                37,
+                45,
+                52
             ],
-            "tipo_calcolo": "Isotopia V11: BARI 1° numero (15) + 5 = 20; diametrale = 65",
-            "ambata": 20,
+            "tipo_calcolo": "Isotopia V11: BARI 1° numero (29) + 5 = 34; diametrale = 79",
+            "ambata": 34,
             "ambo": [
-                20,
-                65
+                34,
+                79
             ],
             "ambetti": [
                 [
-                    20,
-                    66
+                    34,
+                    80
                 ],
                 [
-                    20,
-                    64
+                    34,
+                    78
                 ]
             ]
         }
@@ -326,6 +326,14 @@
     "storico_verificato": [
         {
             "data": "Concorso Arretrat. -1",
+            "ambata": 20,
+            "ambo": "20 - 65",
+            "colpo": null,
+            "tipo_esito": null,
+            "stato": "In gioco"
+        },
+        {
+            "data": "Concorso Arretrat. -2",
             "ambata": 66,
             "ambo": "66 - 21",
             "colpo": null,
@@ -333,7 +341,7 @@
             "stato": "In gioco"
         },
         {
-            "data": "Concorso Arretrat. -2",
+            "data": "Concorso Arretrat. -3",
             "ambata": 86,
             "ambo": "86 - 41",
             "colpo": null,
@@ -341,7 +349,7 @@
             "stato": "In gioco"
         },
         {
-            "data": "Concorso Arretrat. -3",
+            "data": "Concorso Arretrat. -4",
             "ambata": 68,
             "ambo": "68 - 23",
             "colpo": 2,
@@ -349,7 +357,7 @@
             "stato": "Ambata Vincente"
         },
         {
-            "data": "Concorso Arretrat. -4",
+            "data": "Concorso Arretrat. -5",
             "ambata": 64,
             "ambo": "64 - 19",
             "colpo": 2,
@@ -357,7 +365,7 @@
             "stato": "Ambata Vincente"
         },
         {
-            "data": "Concorso Arretrat. -5",
+            "data": "Concorso Arretrat. -6",
             "ambata": 25,
             "ambo": "25 - 70",
             "colpo": 2,
@@ -365,7 +373,7 @@
             "stato": "Ambata Vincente"
         },
         {
-            "data": "Concorso Arretrat. -6",
+            "data": "Concorso Arretrat. -7",
             "ambata": 79,
             "ambo": "79 - 34",
             "colpo": 2,
@@ -373,7 +381,7 @@
             "stato": "Ambata Vincente"
         },
         {
-            "data": "Concorso Arretrat. -7",
+            "data": "Concorso Arretrat. -8",
             "ambata": 75,
             "ambo": "75 - 30",
             "colpo": null,
@@ -381,7 +389,7 @@
             "stato": "In gioco"
         },
         {
-            "data": "Concorso Arretrat. -8",
+            "data": "Concorso Arretrat. -9",
             "ambata": 43,
             "ambo": "43 - 88",
             "colpo": null,
@@ -389,20 +397,12 @@
             "stato": "In gioco"
         },
         {
-            "data": "Concorso Arretrat. -9",
+            "data": "Concorso Arretrat. -10",
             "ambata": 15,
             "ambo": "15 - 60",
             "colpo": 9,
             "tipo_esito": "ambata",
             "stato": "Ambata Vincente"
-        },
-        {
-            "data": "Concorso Arretrat. -10",
-            "ambata": 21,
-            "ambo": "21 - 66",
-            "colpo": null,
-            "tipo_esito": null,
-            "stato": "Ciclo concluso (No esito)"
         }
     ]
 }
